@@ -155,7 +155,8 @@
 {% endblock %}
 
 {% block extra_js %}
-<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBfpbm8ipg8vm_3mtX3WCMH_Wd9SStr5-U&callback=initMap"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_key }}&callback=initMap"></script>
+
 <script>
     // ── MAP ──────────────────────────────────────────────────────────────────
     let map, marker;

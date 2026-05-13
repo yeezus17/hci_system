@@ -3,6 +3,8 @@ from urllib import request
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.db.models import Q
+
+from core import settings
 from .models import Service, Category
 from management.forms import AnnonceForm, HCISignupForm
 from .models import Annonce, Profile
@@ -90,7 +92,10 @@ def publier_annonce(request):
     else:
         form = AnnonceForm()
         
-    return render(request, 'management/publier_annonce.html', {'form': form})
+    return render(request, 'management/publier_annonce.html', {
+        'form': form,
+        'google_maps_key': settings.GOOGLE_MAPS_KEY,
+    })
 
 
 def services_list(request):
