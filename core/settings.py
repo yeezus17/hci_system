@@ -81,7 +81,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'core.urls'
-
+GOOGLE_MAPS_KEY = os.environ.get('GOOGLE_MAPS_KEY', '')
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
