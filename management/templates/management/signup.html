@@ -1,0 +1,444 @@
+{% extends 'management/base.html' %}
+{% load static %}
+{% load socialaccount %}
+
+{% block title %}HCI Portal | Inscription{% endblock %}
+
+{% block content %}
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700;800&display=swap');
+
+    :root {
+        --gold: #D4AF37;
+        --gold-dim: rgba(212, 175, 55, 0.12);
+        --gold-glow: rgba(212, 175, 55, 0.25);
+        --navy: #0a0a0a;
+        --surface: rgba(255,255,255,0.03);
+        --border: rgba(255,255,255,0.07);
+        --text-muted: rgba(255,255,255,0.35);
+        --text-faint: rgba(255,255,255,0.15);
+    }
+
+    .auth-wrap {
+        font-family: 'DM Sans', sans-serif;
+        min-height: 90vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem 1rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .auth-wrap::before {
+        content: '';
+        position: fixed;
+        top: -20%;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 600px;
+        height: 600px;
+        background: radial-gradient(ellipse, rgba(212,175,55,0.04) 0%, transparent 70%);
+        pointer-events: none;
+    }
+
+    .auth-container {
+        width: 100%;
+        max-width: 420px;
+        animation: fadeUp 0.5s ease both;
+    }
+
+    @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(16px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Brand ── */
+    .brand {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .brand-logo {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 52px;
+        height: 52px;
+        background: var(--gold);
+        border-radius: 14px;
+        margin-bottom: 1rem;
+        box-shadow: 0 8px 32px var(--gold-glow);
+        transition: transform 0.4s ease;
+        text-decoration: none;
+    }
+    .brand-logo:hover { transform: rotate(6deg) scale(1.05); }
+    .brand-logo img { width: 30px; height: 30px; }
+
+    .brand-title {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 2.4rem;
+        letter-spacing: 0.05em;
+        color: #fff;
+        line-height: 1;
+        margin-bottom: 0.35rem;
+    }
+    .brand-title span { color: var(--gold); }
+
+    .brand-sub {
+        font-size: 0.6rem;
+        font-weight: 600;
+        letter-spacing: 0.35em;
+        text-transform: uppercase;
+        color: var(--text-faint);
+    }
+
+    /* ── Card ── */
+    .auth-card {
+        background: linear-gradient(160deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.015) 100%);
+        border: 1px solid var(--border);
+        border-radius: 28px;
+        padding: 2.2rem 2rem;
+        backdrop-filter: blur(20px);
+    }
+
+    /* ── Tab switcher ── */
+    .tab-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        background: rgba(255,255,255,0.03);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 4px;
+        margin-bottom: 1.8rem;
+        gap: 4px;
+    }
+
+    .tab-btn {
+        padding: 0.6rem;
+        border: none;
+        background: transparent;
+        color: var(--text-muted);
+        font-family: 'DM Sans', sans-serif;
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.25s ease;
+        text-decoration: none;
+        text-align: center;
+        display: block;
+    }
+    .tab-btn.active {
+        background: var(--gold);
+        color: #0a0a0a;
+        box-shadow: 0 4px 16px var(--gold-glow);
+    }
+    .tab-btn:not(.active):hover {
+        color: rgba(255,255,255,0.6);
+        background: rgba(255,255,255,0.04);
+    }
+
+    /* ── Fields ── */
+    .fields-grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.9rem;
+        margin-bottom: 1rem;
+    }
+
+    .field-group { margin-bottom: 1rem; }
+
+    .field-label {
+        display: block;
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        margin-bottom: 0.45rem;
+        margin-left: 2px;
+    }
+
+    .field-input {
+        width: 100%;
+        box-sizing: border-box;
+        background: rgba(255,255,255,0.035);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 0.85rem 1rem;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 0.82rem;
+        font-weight: 500;
+        color: #fff;
+        outline: none;
+        transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+    }
+    .field-input::placeholder { color: var(--text-faint); }
+    .field-input:focus {
+        border-color: rgba(212,175,55,0.45);
+        background: rgba(255,255,255,0.055);
+        box-shadow: 0 0 0 3px rgba(212,175,55,0.08);
+    }
+    .field-input.error {
+        border-color: rgba(239,68,68,0.6) !important;
+        background: rgba(239,68,68,0.04) !important;
+    }
+
+    /* Phone field */
+    .phone-wrap {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+    .phone-prefix {
+        position: absolute;
+        left: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding-right: 0.7rem;
+        border-right: 1px solid var(--border);
+        height: 1.4rem;
+        pointer-events: none;
+    }
+    .phone-prefix span {
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: rgba(255,255,255,0.6);
+    }
+    .phone-wrap .field-input { padding-left: 5.2rem; }
+
+    /* Error text */
+    .error-text {
+        color: #f87171;
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        margin-top: 0.3rem;
+        margin-left: 2px;
+        display: none;
+    }
+    .error-text.visible { display: block; }
+
+    /* ── Submit ── */
+    .btn-primary {
+        width: 100%;
+        background: var(--gold);
+        color: #0a0a0a;
+        border: none;
+        border-radius: 14px;
+        padding: 1rem;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 0.76rem;
+        font-weight: 800;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s;
+        box-shadow: 0 6px 24px var(--gold-glow);
+        margin-top: 0.4rem;
+    }
+    .btn-primary:hover  { transform: translateY(-1px); box-shadow: 0 10px 32px var(--gold-glow); }
+    .btn-primary:active { transform: scale(0.98); opacity: 0.9; }
+
+    /* ── Divider ── */
+    .divider {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin: 1.4rem 0;
+    }
+    .divider::before, .divider::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: var(--border);
+    }
+    .divider span {
+        font-size: 0.6rem;
+        font-weight: 700;
+        letter-spacing: 0.3em;
+        text-transform: uppercase;
+        color: var(--text-faint);
+    }
+
+    /* ── Google ── */
+    .btn-google {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.7rem;
+        width: 100%;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 0.85rem;
+        color: rgba(255,255,255,0.65);
+        font-family: 'DM Sans', sans-serif;
+        font-size: 0.76rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-decoration: none;
+        transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.15s;
+    }
+    .btn-google:hover {
+        background: rgba(255,255,255,0.09);
+        border-color: rgba(255,255,255,0.15);
+        color: #fff;
+        transform: translateY(-1px);
+    }
+    .btn-google:active { transform: scale(0.98); }
+
+    /* ── Footer ── */
+    .auth-footer {
+        text-align: center;
+        margin-top: 1.6rem;
+        font-size: 0.74rem;
+        color: var(--text-muted);
+    }
+    .auth-footer a {
+        color: var(--gold);
+        font-weight: 600;
+        text-decoration: none;
+        margin-left: 4px;
+    }
+    .auth-footer a:hover { text-decoration: underline; }
+</style>
+
+<div class="auth-wrap">
+    <div class="auth-container">
+
+        <!-- Brand -->
+        <div class="brand">
+            <a href="{% url 'home' %}" class="brand-logo">
+                <img src="{% static 'img/logo.png' %}" alt="HCI">
+            </a>
+            <div class="brand-title">HCI <span>PORTAL</span></div>
+            <div class="brand-sub">Accès Sécurisé · Ingénierie & Market</div>
+        </div>
+
+        <!-- Card -->
+        <div class="auth-card">
+
+            <!-- Tab row -->
+            <div class="tab-row">
+                <a href="{% url 'login' %}" class="tab-btn">Se connecter</a>
+                <a href="{% url 'signup' %}" class="tab-btn active">S'inscrire</a>
+            </div>
+
+            <!-- Signup form -->
+            <form method="POST" id="signup-form">
+                {% csrf_token %}
+
+                <!-- Name row -->
+                <div class="fields-grid-2">
+                    <div class="field-group" style="margin-bottom:0">
+                        <label class="field-label">Nom *</label>
+                        <input type="text" name="last_name" placeholder="Dupont" class="field-input" required>
+                    </div>
+                    <div class="field-group" style="margin-bottom:0">
+                        <label class="field-label">Prénom *</label>
+                        <input type="text" name="first_name" placeholder="Mohamed" class="field-input" required>
+                    </div>
+                </div>
+
+                <!-- Phone -->
+                <div class="field-group">
+                    <label class="field-label">Téléphone *</label>
+                    <div class="phone-wrap">
+                        <div class="phone-prefix">
+                            <img src="https://flagcdn.com/w20/ma.png" width="18" alt="MA">
+                            <span>+212</span>
+                        </div>
+                        <input type="tel" name="phone" placeholder="6 12 34 56 78" class="field-input" required>
+                    </div>
+                </div>
+
+                <!-- Email -->
+                <div class="field-group">
+    <label class="field-label">Email *</label>
+    <input type="email" name="email" value="{{ request.POST.email }}" 
+           class="field-input {% if form.email.errors %}error{% endif %}" required>
+    
+    {% if form.email.errors %}
+        {% for error in form.email.errors %}
+            <p class="error-text visible">{{ error }}</p>
+        {% endfor %}
+    {% endif %}
+</div>
+
+                <!-- Password -->
+                <div class="field-group">
+                    <label class="field-label">Mot de passe *</label>
+                    <input type="password" name="password1" id="pw1" class="field-input" required>
+                </div>
+
+                <!-- Confirm password -->
+                <div class="field-group">
+                    <label class="field-label">Confirmer le mot de passe *</label>
+                    <input type="password" name="password2" id="pw2" class="field-input" required>
+                    <p class="error-text" id="pw-error">Les mots de passe ne correspondent pas</p>
+                </div>
+
+                <button type="submit" class="btn-primary">Créer mon compte</button>
+            </form>
+
+            <!-- Divider -->
+            <div class="divider"><span>ou</span></div>
+
+            <!-- Google — plain redirect -->
+            <a href="{% provider_login_url 'google' %}" class="btn-google">
+                <svg width="18" height="18" viewBox="0 0 24 24">
+                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.66l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                </svg>
+                S'inscrire avec Google
+            </a>
+
+        </div>
+
+        <!-- Footer -->
+        <div class="auth-footer">
+            Déjà un compte ?<a href="{% url 'account_login' %}">Se connecter</a>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    const pw1 = document.getElementById('pw1');
+    const pw2 = document.getElementById('pw2');
+    const pwError = document.getElementById('pw-error');
+
+    function checkPasswords() {
+        if (pw2.value.length === 0) {
+            pw2.classList.remove('error');
+            pwError.classList.remove('visible');
+            return;
+        }
+        const match = pw1.value === pw2.value;
+        pw2.classList.toggle('error', !match);
+        pwError.classList.toggle('visible', !match);
+    }
+
+    pw1.addEventListener('input', checkPasswords);
+    pw2.addEventListener('input', checkPasswords);
+
+    document.getElementById('signup-form').addEventListener('submit', function(e) {
+        if (pw1.value !== pw2.value) {
+            e.preventDefault();
+            pw2.classList.add('error');
+            pwError.classList.add('visible');
+            pw2.focus();
+        }
+    });
+</script>
+
+{% endblock %}

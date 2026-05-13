@@ -1,0 +1,35 @@
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<style>
+    .swal2-popup {
+        background: #060B1A !important;
+        border: 1px solid rgba(212, 175, 55, 0.2) !important;
+        border-radius: 2rem !important;
+        color: #ffffff !important;
+    }
+    .swal2-title { color: #ffffff !important; font-family: 'Outfit', sans-serif !important; }
+    .swal2-confirm {
+        background-color: #D4AF37 !important;
+        color: #060B1A !important;
+        font-weight: 900 !important;
+        text-transform: uppercase !important;
+        border-radius: 1rem !important;
+        padding: 12px 30px !important;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        {% if messages %}
+            {% for message in messages %}
+                Swal.fire({
+                    icon: "{% if message.tags == 'error' %}error{% else %}success{% endif %}",
+                    title: "{% if message.tags == 'error' %}Oups...{% else %}Succès !{% endif %}",
+                    text: "{{ message|escapejs }}",
+                    confirmButtonText: 'Continuer',
+                    iconColor: "{% if message.tags == 'error' %}#ef4444{% else %}#D4AF37{% endif %}",
+                });
+            {% endfor %}
+        {% endif %}
+    });
+</script>

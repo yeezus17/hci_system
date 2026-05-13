@@ -1,0 +1,206 @@
+# H.C.I Handassa - Translation File
+# Copyright (C) 2026
+msgid ""
+msgstr ""
+"Project-Id-Version: H.C.I System 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-04-01 15:45+0200\n"
+"PO-Revision-Date: 2026-04-01 15:45+0200\n"
+"Last-Translator: Admin <contact@hci-handassa.ma>\n"
+"Language-Team: Arabic\n"
+"Language: ar\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
+"&& n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
+
+#: .\management\templates\management\base.html:9
+msgid "Excellence Immobilière & Ingénierie"
+msgstr "التميز العقاري والهندسي"
+
+#: .\management\templates\management\base.html:74
+msgid "Marketplace"
+msgstr "سوق العقارات"
+
+#: .\management\templates\management\base.html:78
+msgid "Services"
+msgstr "الخدمات"
+
+#: .\management\templates\management\base.html:84
+msgid "Prestataires"
+msgstr "الموردون"
+
+#: .\management\templates\management\base.html:88
+msgid "Matières"
+msgstr "المواد"
+
+#: .\management\templates\management\base.html:94
+msgid "BTP & VRD"
+msgstr "الأشغال العمومية"
+
+#: .\management\templates\management\base.html:95
+msgid "BET & Études"
+msgstr "مكتب الدراسات"
+
+#: .\management\templates\management\base.html:100
+msgid "Langue"
+msgstr "اللغة"
+
+#: .\management\templates\management\base.html:122
+msgid "Publier"
+msgstr "نشر إعلان"
+
+#: .\management\templates\management\base.html:127
+msgid "Connecté"
+msgstr "متصل"
+
+#: .\management\templates\management\base.html:141
+msgid "Dashboard"
+msgstr "لوحة التحكم"
+
+#: .\management\templates\management\base.html:148
+msgid "Sortie"
+msgstr "تسجيل الخروج"
+
+#: .\management\templates\management\base.html:156
+msgid "Accès Membre"
+msgstr "دخول الأعضاء"
+
+#: .\management\templates\management\home.html:109
+msgid "Catalogue Immobilière"
+msgstr "كتالوج العقارات"
+
+#: .\management\templates\management\home.html:116
+msgid "L'Élite"
+msgstr "نخبة"
+
+#: .\management\templates\management\home.html:116
+msgid "Bâtit"
+msgstr "تبني"
+
+#: .\management\templates\management\home.html:134
+msgid "Réseau HCI"
+msgstr "شبكة HCI"
+
+#: .\management\templates\management\home.html:152
+msgid "S'inscrire"
+msgstr "إنشاء حساب"
+
+#: .\management\templates\management\home.html:156
+msgid "Connexion"
+msgstr "تسجيل الدخول"
+
+#: .\management\templates\management\home.html:171
+msgid "Expertise"
+msgstr "الخبرة"
+
+#: .\management\templates\management\home.html:176
+msgid "Gros Œuvres"
+msgstr "الأشغال الكبرى"
+
+#: .\management\templates\management\home.html:180
+msgid "Architecte"
+msgstr "مهندس معماري"
+
+#: .\management\templates\management\home.html:184
+msgid "Électricité"
+msgstr "كهرباء"
+
+#: .\management\templates\management\home.html:188
+msgid "Intérieur"
+msgstr "تصميم داخلي"
+
+#: .\management\templates\management\home.html:192
+msgid "Aluminium"
+msgstr "ألومنيوم"
+
+#: .\management\templates\management\home.html:196
+msgid "Tout voir"
+msgstr "عرض الكل"
+
+#: .\management\templates\management\home.html:206
+msgid "Matériaux"
+msgstr "مواد البناء"
+
+#: .\management\templates\management\home.html:210
+msgid "Sanitaire"
+msgstr "التجهيزات الصحية"
+
+#: .\management\templates\management\home.html:214
+msgid "Peinture"
+msgstr "صباغة"
+
+#: .\management\templates\management\home.html:218
+msgid "Piscine"
+msgstr "مسابح"
+
+#: .\management\templates\management\home.html:222
+msgid "Revêtement"
+msgstr "تغليف الأرضيات"
+
+#: .\management\templates\management\home.html:236
+msgid "Immobilier"
+msgstr "عقارية"
+
+#: .\management\templates\management\home.html:252
+msgid "DH"
+msgstr "درهم"
+
+#: .\management\templates\management\home.html:258
+msgid "Aucune annonce disponible"
+msgstr "لا توجد إعلانات متاحة"
+
+#: .\management\templates\management\home.html:280
+msgid "Bureau d'études techniques."
+msgstr "مكتب دراسات تقنية."
+
+# --- MARKETPLACE FILTERS ---
+
+msgid "Recherche"
+msgstr "بحث"
+
+msgid "Mot-clé..."
+msgstr "كلمة مفتاحية..."
+
+msgid "Transaction"
+msgstr "نوع المعاملة"
+
+msgid "Acheter"
+msgstr "شراء"
+
+msgid "Vendre"
+msgstr "بيع"
+
+msgid "Louer"
+msgstr "كراء"
+
+msgid "Prix Max (DH)"
+msgstr "السعر الأقصى (درهم)"
+
+msgid "Villas"
+msgstr "فيلات"
+
+msgid "Apparts"
+msgstr "شقق"
+
+msgid "Terrains"
+msgstr "أراضي"
+
+msgid "Bureaux"
+msgstr "مكاتب"
+
+msgid "Localité"
+msgstr "المدينة"
+
+msgid "Toutes les villes"
+msgstr "جميع المدن"
+
+msgid "Estimation"
+msgstr "تقدير"
+
+msgid "Reset"
+msgstr "إعادة تعيين"
+
+msgid "Aucun résultat"
+msgstr "لا توجد نتائج"

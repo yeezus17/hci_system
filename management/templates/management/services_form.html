@@ -1,0 +1,197 @@
+{% extends "management/base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --hci-navy: #060B1A;
+        --hci-gold: #D4AF37;
+        --hci-orange: #FF6B00;
+    }
+
+    .form-gradient-bg {
+        background: radial-gradient(circle at top right, rgba(212, 175, 55, 0.08), transparent),
+                    radial-gradient(circle at bottom left, rgba(255, 107, 0, 0.05), transparent);
+    }
+
+    .hci-label {
+        font-size: 10px;
+        text-transform: uppercase;
+        font-weight: 900;
+        letter-spacing: 0.25em;
+        color: rgba(255, 255, 255, 0.4);
+        margin-bottom: 1rem;
+        display: block;
+    }
+
+    .hci-field {
+        width: 100%;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 1.25rem;
+        padding: 1.25rem;
+        font-size: 0.9rem;
+        color: white;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        outline: none;
+    }
+
+    .hci-field:focus {
+        border-color: var(--hci-gold);
+        background: rgba(255, 255, 255, 0.06);
+        box-shadow: 0 0 30px rgba(212, 175, 55, 0.1);
+    }
+
+    /* Category Chip Styling */
+    .category-card {
+        transition: all 0.3s ease;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .category-radio:checked + .category-card {
+        background: var(--hci-gold);
+        border-color: var(--hci-gold);
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(212, 175, 55, 0.2);
+    }
+
+    .category-radio:checked + .category-card i,
+    .category-radio:checked + .category-card span {
+        color: black !important;
+        opacity: 1 !important;
+    }
+
+    .category-card:hover:not(.category-radio:checked + .category-card) {
+        border-color: rgba(212, 175, 55, 0.3);
+        background: rgba(255, 255, 255, 0.05);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-[#060B1A] form-gradient-bg py-20 px-[6%]">
+    <div class="max-w-4xl mx-auto">
+        
+        <div class="mb-16">
+            <a href="{% url 'services_list' %}" class="text-[10px] font-black uppercase tracking-widest text-white/30 hover:text-[#D4AF37] transition-all mb-8 inline-block">
+                <i class="fa-solid fa-chevron-left mr-2"></i> Marketplace
+            </a>
+            <h1 class="text-5xl font-black uppercase tracking-tighter text-white">
+                NOUVEAU <span class="text-[#D4AF37]">SERVICE</span>
+            </h1>
+            <p class="text-white/40 text-[10px] font-bold uppercase tracking-[0.4em] mt-4">HCI Industrial Ecosystem Recruitment</p>
+        </div>
+
+        <form method="POST" enctype="multipart/form-data" class="space-y-12">
+            {% csrf_token %}
+            
+            <div class="bg-white/5 border border-white/10 p-8 md:p-12 rounded-[3rem] backdrop-blur-xl">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                    <div class="space-y-2">
+                        <label class="hci-label">Nom de l'entité / Entreprise*</label>
+                        <input type="text" name="name" placeholder="Ex: Handassa Consulting" class="hci-field" required>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="hci-label">Ville de siège*</label>
+                        <input type="text" name="city" placeholder="Ex: Casablanca" class="hci-field" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white/5 border border-white/10 p-8 md:p-12 rounded-[3rem] backdrop-blur-xl">
+                <label class="hci-label mb-8">Domaine d'expertise principal*</label>
+                
+                <h4 class="text-[9px] font-black text-[#D4AF37] uppercase tracking-[0.3em] mb-6 flex items-center gap-4">
+                    <span>Expertise & Services</span>
+                    <div class="h-[1px] flex-1 bg-white/5"></div>
+                </h4>
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 mb-10">
+                    {% for cat in categories %}
+                        {% if cat.type == 'prestataire' %}
+                        <label class="relative cursor-pointer group">
+                            <input type="radio" name="category" value="{{ cat.id }}" class="category-radio hidden" required>
+                            <div class="category-card bg-black/20 rounded-2xl p-6 text-center h-full flex flex-col items-center justify-center">
+                                <i class="{{ cat.icon_class }} text-2xl mb-3 text-white/30 group-hover:text-[#D4AF37] transition-colors"></i>
+                                <span class="text-[9px] font-black uppercase tracking-tight text-white/60 leading-tight">{{ cat.name }}</span>
+                            </div>
+                        </label>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+
+                <h4 class="text-[9px] font-black text-[#FF6B00] uppercase tracking-[0.3em] mb-6 flex items-center gap-4">
+                    <span>Matériaux & Fournitures</span>
+                    <div class="h-[1px] flex-1 bg-white/5"></div>
+                </h4>
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                    {% for cat in categories %}
+                        {% if cat.type == 'matiere' %}
+                        <label class="relative cursor-pointer group">
+                            <input type="radio" name="category" value="{{ cat.id }}" class="category-radio hidden" required>
+                            <div class="category-card bg-black/20 rounded-2xl p-6 text-center h-full flex flex-col items-center justify-center">
+                                <i class="{{ cat.icon_class }} text-2xl mb-3 text-white/30 group-hover:text-[#FF6B00] transition-colors"></i>
+                                <span class="text-[9px] font-black uppercase tracking-tight text-white/60 leading-tight">{{ cat.name }}</span>
+                            </div>
+                        </label>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="bg-white/5 border border-white/10 p-8 md:p-12 rounded-[3rem] backdrop-blur-xl space-y-8">
+                <div class="space-y-2">
+                    <label class="hci-label">Description du Service*</label>
+                    <textarea name="description" rows="5" placeholder="Décrivez vos compétences techniques, vos projets réalisés..." class="hci-field resize-none" required></textarea>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                    <div class="space-y-2">
+                        <label class="hci-label">Téléphone de contact*</label>
+                        <input type="text" name="phone" placeholder="+212 ..." class="hci-field" required>
+                    </div>
+                   <div class="space-y-4">
+    <label class="hci-label">Logo / Visuel</label>
+    <div class="flex items-center gap-6">
+        <div id="preview-container" class="hidden">
+            <div class="w-16 h-16 rounded-full border-2 border-[#D4AF37] p-1 overflow-hidden bg-white/10">
+                <img id="logo-preview" src="#" alt="Preview" class="w-full h-full object-cover rounded-full">
+            </div>
+        </div>
+        
+        <div class="flex-1">
+            <input type="file" name="logo" id="logo-id" class="hci-field file:hidden cursor-pointer" onchange="previewImage(this)">
+            <p class="text-[8px] text-white/30 uppercase mt-2 tracking-widest">Formats: PNG, JPG (Carré recommandé)</p>
+        </div>
+    </div>
+</div>
+                </div>
+            </div>
+
+            <div class="pt-4">
+                <button type="submit" class="w-full bg-[#D4AF37] text-black font-black py-7 rounded-[2rem] uppercase tracking-[0.4em] text-xs hover:bg-white transition-all shadow-2xl shadow-[#D4AF37]/20 active:scale-[0.98]">
+                    Soumettre le dossier
+                </button>
+                <p class="text-center text-[8px] text-white/20 uppercase mt-6 font-bold tracking-[0.5em]">L'équipe HCI traitera votre demande sous 48h ouvrées</p>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    function previewImage(input) {
+        const preview = document.getElementById('logo-preview');
+        const container = document.getElementById('preview-container');
+        
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                container.classList.remove('hidden');
+                container.classList.add('animate-pulse-subtle'); // Optional: simple entry animation
+            }
+            
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>
+{% endblock %}

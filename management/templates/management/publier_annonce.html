@@ -1,0 +1,276 @@
+{% extends 'management/base.html' %}
+{% block extra_css %}
+<style>
+    .glass-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.08); }
+    .input-field { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.1); color: #FFFFFF; transition: all 0.3s; }
+    .input-field:focus { border-color: var(--gold); background: rgba(255, 255, 255, 0.05); outline: none; }
+    
+    #map {
+        height: 400px;
+        width: 100%;
+        border-radius: 2rem;
+        border: 1px solid rgba(212, 175, 55, 0.2);
+    }
+
+    .btn-publish {
+        background: transparent;
+        border: 1px solid var(--gold);
+        color: var(--gold);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+    }
+    .btn-publish:hover {
+        background: var(--gold);
+        color: var(--navy);
+        box-shadow: 0 0 40px rgba(212, 175, 55, 0.3);
+    }
+    .step-num { font-family: 'Outfit', sans-serif; font-size: 4rem; color: rgba(212, 175, 55, 0.1); line-height: 1; }
+
+    .preview-thumb { aspect-ratio: 1; border-radius: 1rem; overflow: hidden; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); position: relative; }
+    .preview-thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .preview-thumb .video-placeholder { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.5rem; }
+    .preview-thumb .remove-btn { position: absolute; top: 6px; right: 6px; width: 22px; height: 22px; background: rgba(0,0,0,0.7); border: 1px solid rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 9px; color: white; }
+    .preview-thumb .remove-btn:hover { background: #D4AF37; color: black; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-6 py-10">
+    <div class="flex justify-between items-center mb-16">
+        <h1 class="brand-font font-black text-4xl tracking-tighter uppercase">Publier <span class="text-gold">Votre annonce</span></h1>
+        <div class="h-[1px] flex-grow mx-8 bg-white/5"></div>
+        <a href="/" class="text-[10px] font-bold tracking-[0.3em] uppercase text-white/40 hover:text-gold transition-colors">Fermer <i class="fa-solid fa-xmark ml-2"></i></a>
+    </div>
+
+    <form method="POST" enctype="multipart/form-data" class="grid lg:grid-cols-12 gap-10">
+        {% csrf_token %}
+        <input type="hidden" name="latitude" id="lat-input" value="34.257">
+        <input type="hidden" name="longitude" id="lng-input" value="-6.589">
+
+        <div class="lg:col-span-7 space-y-8">
+
+            <!-- STEP 01: Basic Info -->
+            <div class="glass-card p-10 rounded-[3rem] relative">
+                <span class="absolute top-8 right-10 step-num">01</span>
+                <h2 class="font-bold text-xl mb-8">Informations de base</h2>
+                <div class="space-y-6">
+                    <div>
+                        <label class="text-[10px] font-black uppercase tracking-widest text-gold mb-2 block">Titre du bien</label>
+                        <input type="text" name="titre" required placeholder="Ex: Magnifique Villa avec piscine" class="input-field w-full p-5 rounded-2xl">
+                    </div>
+                    <div class="grid grid-cols-2 gap-6">
+                        <div>
+                            <label class="text-[10px] font-black uppercase tracking-widest text-gold mb-2 block">Type de transaction</label>
+                            <select name="type_transaction" class="input-field w-full p-5 rounded-2xl appearance-none cursor-pointer">
+                                <option value="ACHAT">Achat</option>
+                                <option value="VENTE">Vente</option>
+                                <option value="LOCATION">Location</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-black uppercase tracking-widest text-gold mb-2 block">Catégorie</label>
+                            <select name="type_bien" class="input-field w-full p-5 rounded-2xl appearance-none cursor-pointer">
+                                <option value="APPARTEMENT">Appartement</option>
+                                <option value="VILLA">Villa</option>
+                                <option value="BUREAU">Bureau</option>
+                                <option value="TERRAIN">Terrain</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-black uppercase tracking-widest text-gold mb-2 block">Prix (DH)</label>
+                        <input type="number" name="prix" required placeholder="Ex: 1500000" class="input-field w-full p-5 rounded-2xl">
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-black uppercase tracking-widest text-gold mb-2 block">Description</label>
+                        <textarea name="description" rows="4" placeholder="Décrivez votre bien en détail..." class="input-field w-full p-5 rounded-2xl resize-none"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 02: Media Gallery -->
+            <div class="glass-card p-10 rounded-[3rem] relative">
+                <span class="absolute top-8 right-10 step-num">02</span>
+                <h2 class="font-bold text-xl mb-6">Galerie Photos & Vidéos</h2>
+
+                <label for="media_files" class="flex flex-col items-center justify-center border-2 border-dashed border-white/10 rounded-3xl p-12 hover:bg-white/[0.02] hover:border-[#D4AF37]/30 cursor-pointer transition-all group">
+                    <i class="fa-solid fa-cloud-arrow-up text-[#D4AF37] text-3xl mb-4 group-hover:scale-110 transition-transform"></i>
+                    <span id="upload-label" class="text-white/40 text-sm font-bold">Déposez vos photos & vidéos ici</span>
+                    <span class="text-white/20 text-xs mt-2 uppercase tracking-widest font-black">Plusieurs fichiers acceptés</span>
+                    <input type="file" id="media_files" name="media_files" multiple accept="image/*,video/*" class="hidden">
+                </label>
+
+                <!-- Preview Grid -->
+                <div id="preview-grid" class="grid grid-cols-3 gap-3 mt-6 hidden"></div>
+
+                <!-- File count badge -->
+                <div id="file-count-badge" class="hidden mt-4 flex items-center gap-3">
+                    <span class="text-[9px] font-black uppercase tracking-widest text-[#D4AF37]">
+                        <i class="fa-solid fa-check-circle mr-1"></i>
+                        <span id="file-count-text"></span>
+                    </span>
+                    <button type="button" onclick="clearFiles()" class="text-[9px] font-black uppercase tracking-widest text-white/20 hover:text-white/60 transition-colors">
+                        ✕ Tout effacer
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT COLUMN -->
+        <div class="lg:col-span-5 space-y-8">
+            <div class="glass-card p-10 rounded-[3rem] relative flex flex-col h-full">
+                <span class="absolute top-8 right-10 step-num">03</span>
+                <h2 class="font-bold text-xl mb-8">Localisation</h2>
+
+                <div>
+                    <label class="text-[10px] font-black uppercase tracking-widest text-gold mb-2 block">Ville</label>
+                    <input type="text" name="ville" value="Kenitra" class="input-field w-full p-5 rounded-2xl mb-6">
+                </div>
+
+                <p class="text-[9px] font-black uppercase tracking-[0.3em] text-white/20 mb-4">
+                    <i class="fa-solid fa-location-crosshairs text-[#D4AF37] mr-2"></i>Cliquez sur la carte pour épingler
+                </p>
+                
+                <div id="map" class="flex-grow shadow-2xl"></div>
+
+                <div class="mt-6 grid grid-cols-2 gap-3">
+                    <div class="bg-white/[0.02] border border-white/5 rounded-2xl p-4">
+                        <p class="text-[8px] font-black uppercase text-white/20 mb-1">Latitude</p>
+                        <p id="lat-display" class="text-xs font-black text-[#D4AF37]">34.257000</p>
+                    </div>
+                    <div class="bg-white/[0.02] border border-white/5 rounded-2xl p-4">
+                        <p class="text-[8px] font-black uppercase text-white/20 mb-1">Longitude</p>
+                        <p id="lng-display" class="text-xs font-black text-[#D4AF37]">-6.589000</p>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-publish w-full mt-10 py-6 rounded-2xl font-black uppercase tracking-[0.4em] text-xs">
+                    Publier sur H.C.I <i class="fa-solid fa-paper-plane ml-2"></i>
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBfpbm8ipg8vm_3mtX3WCMH_Wd9SStr5-U&callback=initMap"></script>
+<script>
+    // ── MAP ──────────────────────────────────────────────────────────────────
+    let map, marker;
+    function initMap() {
+        const kenitra = { lat: 34.257, lng: -6.589 };
+        map = new google.maps.Map(document.getElementById("map"), {
+            zoom: 14,
+            center: kenitra,
+            disableDefaultUI: true,
+            zoomControl: true,
+            styles: [
+                { "featureType": "all", "elementType": "labels.text.fill", "stylers": [{ "color": "#ffffff" }] },
+                { "featureType": "all", "elementType": "labels.text.stroke", "stylers": [{ "visibility": "on" }, { "color": "#060b1a" }, { "weight": 2 }] },
+                { "featureType": "all", "elementType": "labels.icon", "stylers": [{ "visibility": "off" }] },
+                { "featureType": "landscape", "elementType": "geometry", "stylers": [{ "color": "#060b1a" }] },
+                { "featureType": "poi", "elementType": "geometry", "stylers": [{ "color": "#0a1126" }] },
+                { "featureType": "road", "elementType": "geometry", "stylers": [{ "color": "#1a233a" }] },
+                { "featureType": "road.highway", "elementType": "geometry", "stylers": [{ "color": "#D4AF37" }, { "weight": 0.2 }, { "lightness": -40 }] },
+                { "featureType": "water", "elementType": "geometry", "stylers": [{ "color": "#0a1126" }] }
+            ]
+        });
+
+        marker = new google.maps.Marker({
+            position: kenitra,
+            map: map,
+            draggable: true,
+            icon: {
+                path: google.maps.SymbolPath.CIRCLE,
+                fillColor: "#D4AF37",
+                fillOpacity: 1,
+                scale: 10,
+                strokeColor: "#FFFFFF",
+                strokeWeight: 2
+            }
+        });
+
+        const update = (ll) => {
+            const lat = ll.lat().toFixed(6);
+            const lng = ll.lng().toFixed(6);
+            document.getElementById('lat-input').value = lat;
+            document.getElementById('lng-input').value = lng;
+            document.getElementById('lat-display').innerText = lat;
+            document.getElementById('lng-display').innerText = lng;
+        };
+        map.addListener("click", (e) => { marker.setPosition(e.latLng); update(e.latLng); });
+        marker.addListener("dragend", (e) => { update(e.latLng); });
+    }
+
+    // ── MULTI-FILE UPLOAD PREVIEW ────────────────────────────────────────────
+    let selectedFiles = [];
+
+    document.getElementById('media_files').addEventListener('change', function () {
+        const newFiles = Array.from(this.files);
+        selectedFiles = [...selectedFiles, ...newFiles];
+        renderPreviews();
+    });
+
+    function renderPreviews() {
+        const grid = document.getElementById('preview-grid');
+        const badge = document.getElementById('file-count-badge');
+        const countText = document.getElementById('file-count-text');
+        const label = document.getElementById('upload-label');
+
+        grid.innerHTML = '';
+
+        if (selectedFiles.length === 0) {
+            grid.classList.add('hidden');
+            badge.classList.add('hidden');
+            label.innerText = 'Déposez vos photos & vidéos ici';
+            return;
+        }
+
+        grid.classList.remove('hidden');
+        badge.classList.remove('hidden');
+        label.innerText = 'Ajouter d\'autres fichiers';
+        countText.innerText = `${selectedFiles.length} fichier(s) sélectionné(s)`;
+
+        selectedFiles.forEach((file, index) => {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'preview-thumb';
+
+            // Remove button
+            const removeBtn = document.createElement('div');
+            removeBtn.className = 'remove-btn';
+            removeBtn.innerHTML = '✕';
+            removeBtn.onclick = () => { selectedFiles.splice(index, 1); renderPreviews(); };
+
+            if (file.type.startsWith('image/')) {
+                const img = document.createElement('img');
+                img.src = URL.createObjectURL(file);
+                img.alt = file.name;
+                wrapper.appendChild(img);
+            } else if (file.type.startsWith('video/')) {
+                const placeholder = document.createElement('div');
+                placeholder.className = 'video-placeholder';
+                placeholder.innerHTML = `
+                    <i class="fa-solid fa-film" style="color:#D4AF37; font-size:1.5rem;"></i>
+                    <span style="color:rgba(255,255,255,0.3); font-size:8px; font-weight:900; text-transform:uppercase; text-align:center; padding:0 0.5rem; word-break:break-all;">${file.name}</span>
+                `;
+                wrapper.appendChild(placeholder);
+            }
+
+            wrapper.appendChild(removeBtn);
+            grid.appendChild(wrapper);
+        });
+
+        // Sync the actual file input (rebuild a DataTransfer)
+        const dt = new DataTransfer();
+        selectedFiles.forEach(f => dt.items.add(f));
+        document.getElementById('media_files').files = dt.files;
+    }
+
+    function clearFiles() {
+        selectedFiles = [];
+        renderPreviews();
+    }
+</script>
+{% endblock %}

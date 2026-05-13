@@ -1,0 +1,250 @@
+{% extends "management/base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --hci-navy: #060B1A;
+        --hci-gold: #D4AF37;
+        --hci-orange: #FF6B00;
+    }
+
+    .sub-nav-dark {
+        background: var(--hci-navy);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    /* Category Grid Tiles - Bold Clarity & Gold Hover */
+    .cat-tile {
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        background: rgba(255, 255, 255, 0.02);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        min-height: 130px; 
+        position: relative;
+        overflow: hidden;
+    }
+
+    .cat-tile span {
+        font-size: 11px; /* Increased for better legibility */
+        font-weight: 900;
+        letter-spacing: 0.05em;
+        line-height: 1.3;
+        color: rgba(255, 255, 255, 0.4);
+        transition: all 0.3s ease;
+    }
+
+    .cat-tile i {
+        font-size: 26px; /* Scaled icons */
+        margin-bottom: 14px;
+        opacity: 0.3;
+        transition: all 0.3s ease;
+    }
+
+    /* Active State (Selected) */
+    .cat-tile.active {
+        border-color: var(--hci-gold);
+        background: rgba(212, 175, 55, 0.12);
+        box-shadow: 0 10px 40px rgba(212, 175, 55, 0.15);
+    }
+    .cat-tile.active i { color: var(--hci-gold); opacity: 1; transform: scale(1.1); }
+    .cat-tile.active span { color: white; opacity: 1; }
+
+    /* Hover Effect - Intense Gold Glow */
+    .cat-tile:hover:not(.active) {
+        border-color: var(--hci-gold);
+        background: rgba(212, 175, 55, 0.08);
+        transform: translateY(-5px);
+    }
+    .cat-tile:hover i { 
+        color: var(--hci-gold); 
+        opacity: 1;
+        transform: scale(1.15);
+    }
+    .cat-tile:hover span { 
+        color: white; 
+        opacity: 1;
+    }
+
+    /* City Dropdown Aesthetic Fix */
+    select[name="city"] {
+        color: white !important;
+        background-color: rgba(255, 255, 255, 0.03) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        font-size: 12px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+    }
+
+    /* Standardizes the dropdown list background for dark mode */
+    select[name="city"] option {
+        background-color: #0d121f; 
+        color: white;
+        padding: 15px;
+    }
+
+    /* Service Card Styling */
+    .service-card {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .service-card:hover {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: var(--hci-gold);
+        transform: translateY(-8px);
+        box-shadow: 0 25px 60px rgba(0,0,0,0.6);
+    }
+
+    .boosted-tag {
+        background: var(--hci-orange);
+        color: white;
+        font-size: 9px;
+        font-weight: 900;
+        padding: 5px 12px;
+        border-radius: 8px;
+        letter-spacing: 0.05em;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<nav class="sub-nav-dark py-5 px-[6%] flex items-center justify-between sticky top-0 z-50 backdrop-blur-xl">
+    <div class="flex items-center gap-10">
+        <a href="/" class="text-[11px] font-bold uppercase tracking-widest text-white/40 hover:text-white transition-colors">Accueil</a>
+        <span class="text-white/10">|</span>
+        <h2 class="text-[11px] font-black uppercase tracking-[0.3em] text-[#D4AF37]">Marketplace</h2>
+    </div>
+
+    <div class="flex items-center gap-4">
+        <a href="{% url 'create_service' %}" class="bg-[#D4AF37] text-black font-black px-8 py-3.5 rounded-2xl text-[11px] uppercase tracking-widest hover:bg-white transition-all shadow-2xl shadow-[#D4AF37]/10">
+            <i class="fa-solid fa-plus mr-2"></i> Publier une offre
+        </a>
+    </div>
+</nav>
+
+<div class="min-h-screen bg-[#060B1A] text-white py-16 px-[6%]">
+    
+    <div class="flex justify-center mb-24">
+        <div class="inline-flex bg-white/5 p-2.5 rounded-[3rem] border border-white/10 shadow-2xl">
+            <a href="?type=prestataire" 
+               class="px-14 py-5 rounded-[2.5rem] text-[11px] font-black uppercase tracking-[0.3em] flex items-center gap-4 transition-all
+               {% if service_type == 'prestataire' %}bg-[#D4AF37] text-black shadow-xl shadow-[#D4AF37]/20{% else %}text-white/30 hover:text-white{% endif %}">
+                <i class="fa-solid fa-user-gear text-sm"></i> Prestataires
+            </a>
+            <a href="?type=matiere" 
+               class="px-14 py-5 rounded-[2.5rem] text-[11px] font-black uppercase tracking-[0.3em] flex items-center gap-4 transition-all
+               {% if service_type == 'matiere' %}bg-[#FF6B00] text-white shadow-xl shadow-[#FF6B00]/20{% else %}text-white/30 hover:text-white{% endif %}">
+                <i class="fa-solid fa-cubes text-sm"></i> Matières
+            </a>
+        </div>
+    </div>
+
+    <div class="flex flex-col lg:flex-row gap-20">
+        
+        <aside class="lg:w-1/3 xl:w-1/4">
+            <div class="space-y-16 sticky top-32">
+                
+                <div class="group">
+                    <label class="text-[11px] text-white/20 uppercase font-black tracking-[0.4em] mb-6 block group-hover:text-[#D4AF37] transition-colors">Recherche</label>
+                    <form method="GET" class="relative">
+                        <input type="hidden" name="type" value="{{ service_type }}">
+                        <input type="text" name="q" value="{{ current_query|default:'' }}" placeholder="Entreprise ou service..." 
+                               class="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-7 py-6 text-sm focus:border-[#D4AF37] outline-none transition-all pr-14 text-white font-medium">
+                        <button type="submit" class="absolute right-6 top-1/2 -translate-y-1/2 text-white/20 hover:text-[#D4AF37]">
+                            <i class="fa-solid fa-magnifying-glass text-lg"></i>
+                        </button>
+                    </form>
+                </div>
+
+                <div>
+                    <div class="flex items-center justify-between mb-8">
+                        <label class="text-[11px] text-white/20 uppercase font-black tracking-[0.4em]">Spécialités</label>
+                        {% if current_category %}
+                            <a href="?type={{ service_type }}" class="text-[10px] font-black text-[#D4AF37] uppercase tracking-widest hover:text-white transition-all">Reset</a>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        {% for cat in filter_categories %}
+                            <a href="?type={{ service_type }}&category={{ cat.id }}" 
+                               class="cat-tile flex flex-col items-center justify-center p-6 rounded-[2.5rem] text-center
+                               {% if cat.id|stringformat:"s" == current_category %}active{% endif %}">
+                                
+                                <i class="{{ cat.icon_class }} transition-all"></i>
+                                <span class="uppercase tracking-wide transition-all">
+                                    {{ cat.name }}
+                                </span>
+                            </a>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="pt-10 border-t border-white/5">
+                    <label class="text-[11px] text-white/20 uppercase font-black tracking-[0.4em] mb-6 block">Localisation</label>
+                    <form method="GET">
+                        <input type="hidden" name="type" value="{{ service_type }}">
+                        {% if current_category %}<input type="hidden" name="category" value="{{ current_category }}">{% endif %}
+                        <div class="relative group">
+                            <select name="city" onchange="this.form.submit()" 
+                                    class="w-full rounded-2xl px-7 py-6 outline-none appearance-none cursor-pointer hover:border-[#D4AF37]/50 transition-all text-white">
+                                <option value="" class="bg-[#060B1A] text-white/40">Toutes les villes</option>
+                                {% for city_name in available_cities %}
+                                    <option value="{{ city_name }}" {% if city_name == current_city %}selected{% endif %} class="bg-[#060B1A] text-white">
+                                        {{ city_name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            <i class="fa-solid fa-chevron-down absolute right-7 top-1/2 -translate-y-1/2 text-[11px] text-white/20 group-hover:text-[#D4AF37] pointer-events-none transition-colors"></i>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </aside>
+
+        <main class="lg:w-2/3 xl:w-3/4">
+            {% if results %}
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-10">
+                    {% for service in results %}
+                        <div class="service-card rounded-[3.5rem] p-10 flex flex-col {% if service.is_boosted %}border-[#D4AF37]/40 shadow-2xl shadow-[#D4AF37]/5{% endif %}">
+                            <div class="flex justify-between items-start mb-10">
+                                <div class="w-20 h-20 bg-white/5 rounded-3xl overflow-hidden border border-white/5 p-3 flex items-center justify-center">
+                                    {% if service.logo %}
+                                        <img src="{{ service.logo.url }}" class="w-full h-full object-contain" alt="{{ service.name }}">
+                                    {% else %}
+                                        <i class="fa-solid fa-industry text-3xl text-white/10"></i>
+                                    {% endif %}
+                                </div>
+                                {% if service.is_boosted %}
+                                    <span class="boosted-tag">Vérifié</span>
+                                {% endif %}
+                            </div>
+
+                            <h3 class="text-2xl font-black uppercase tracking-tight mb-3 leading-tight">{{ service.name }}</h3>
+                            <div class="flex items-center gap-2.5 text-[#D4AF37] text-[10px] font-black uppercase tracking-[0.2em] mb-8">
+                                <i class="{{ service.category.icon_class }} text-sm"></i> {{ service.category.name }}
+                            </div>
+
+                            <p class="text-white/40 text-sm line-clamp-3 mb-10 leading-relaxed font-medium">{{ service.description }}</p>
+
+                            <div class="mt-auto pt-10 border-t border-white/5 flex items-center justify-between">
+                                <div class="text-white/30 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2">
+                                    <i class="fa-solid fa-location-dot text-[#D4AF37]"></i> {{ service.city }}
+                                </div>
+                                <a href="#" class="text-[10px] font-black uppercase text-[#D4AF37] hover:text-white transition-all flex items-center gap-2 group">
+                                    Détails <i class="fa-solid fa-arrow-right-long transition-transform group-hover:translate-x-1"></i>
+                                </a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="py-56 text-center bg-white/[0.01] rounded-[5rem] border border-dashed border-white/5 flex flex-col items-center">
+                    <i class="fa-solid fa-box-open text-5xl text-white/5 mb-8"></i>
+                    <p class="uppercase tracking-[0.6em] text-[11px] font-black text-white/20">Aucun prestataire trouvé</p>
+                </div>
+            {% endif %}
+        </main>
+    </div>
+</div>
+{% endblock %}
