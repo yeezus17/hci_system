@@ -1,6 +1,8 @@
 import os, dj_database_url
 from pathlib import Path
 import cloudinary
+import cloudinary.uploader
+import cloudinary.api
 from dotenv import load_dotenv  
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -10,7 +12,9 @@ load_dotenv(os.path.join(BASE_DIR, '.env'))
 SECRET_KEY = os.environ.get('SECRET_KEY')
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+# FIX 1: Ensure Railway's dynamically assigned app domains and wildcard checks pass flawlessly
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1,.railway.app').split(',')
+
 INSTALLED_APPS = [
     'cloudinary_storage',
     'cloudinary',
@@ -26,17 +30,21 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
-    
 ]
 
+# FIX 2: Explicitly parameterize and wrap your credentials securely
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME', 'dw79oqzqb'),
     'API_KEY': os.environ.get('CLOUDINARY_API_KEY', '698599377894747'),
-    'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET', '**********'),
+    'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET'), # Pull securely from Railway environment variables
 }
 
-# Cloudinary config
-
+# FIX 3: Initialize Cloudinary's core SDK module bindings explicitly
+cloudinary.config(
+    cloud_name=CLOUDINARY_STORAGE['CLOUD_NAME'],
+    api_key=CLOUDINARY_STORAGE['API_KEY'],
+    api_secret=CLOUDINARY_STORAGE['API_SECRET']
+)
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
@@ -92,7 +100,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'core.wsgi.application'
 
-# Database — uses DATABASE_URL env var (Postgres on Railway), falls back to SQLite locally
 DATABASES = {
     'default': dj_database_url.config(
         default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
@@ -131,7 +138,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Security settings (active when DEBUG=False)
 if not DEBUG:
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
     SECURE_SSL_REDIRECT = True
