@@ -122,7 +122,7 @@ class Annonce(models.Model):
 
 class AnnonceMedia(models.Model):
     annonce = models.ForeignKey(Annonce, on_delete=models.CASCADE, related_name='media')
-    file = models.FileField(upload_to='annonces/media/')
+    file = models.FileField(upload_to='')
     is_video = models.BooleanField(default=False)
 
     def __str__(self):
