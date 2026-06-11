@@ -1,153 +1,142 @@
 {% extends "management/base.html" %}
 {% load static %}
+{% load i18n %}
 
 {% block title %}{{ annonce.titre }} | HCI Marketplace{% endblock %}
 
 {% block extra_css %}
 <style>
-    :root {
-        --hci-navy: #060B1A;
-        --hci-gold: #D4AF37;
-        --glass-bg: rgba(255, 255, 255, 0.02);
-        --glass-border: rgba(255, 255, 255, 0.08);
-    }
-
-    .glass-card {
-        background: var(--glass-bg);
-        border: 1px solid var(--glass-border);
-        backdrop-filter: blur(10px);
-    }
-
-    .gold-gradient-text {
-        background: linear-gradient(135deg, #FFF 0%, var(--hci-gold) 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
+    /* Clean Architectural Light Cards */
+    .architect-card {
+        background: #FFFFFF;
+        border: 1px solid #E2E8F0;
+        box-shadow: 0 4px 20px rgba(10, 34, 64, 0.02);
     }
 
     .hero-container {
         height: 60vh;
-        min-height: 400px;
+        min-height: 440px;
         position: relative;
         border-radius: 3rem;
         overflow: hidden;
-        border: 1px solid var(--glass-border);
+        border: 1px solid #E2E8F0;
+        box-shadow: 0 10px 30px rgba(10, 34, 64, 0.03);
+        background: #F1F5F9;
     }
 
+    /* Architectural Clean Maps Framework */
     .map-container {
         width: 100%;
-        height: 300px;
+        height: 320px;
         border-radius: 2rem;
         overflow: hidden;
-        filter: grayscale(1) invert(0.92) contrast(1.2);
-        border: 1px solid var(--glass-border);
+        filter: grayscale(0.2) contrast(1.05);
+        border: 1px solid #E2E8F0;
     }
 
-    /* Gallery */
-    .gallery-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; }
-    .gallery-thumb { aspect-ratio: 1; border-radius: 1rem; overflow: hidden; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); cursor: pointer; position: relative; }
-    .gallery-thumb img, .gallery-thumb video { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
-    .gallery-thumb:hover img, .gallery-thumb:hover video { transform: scale(1.08); }
-    .gallery-thumb .video-badge { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.4); }
+    /* Light Dynamic Gallery Grid */
+    .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 1rem; }
+    .gallery-thumb { aspect-ratio: 1; border-radius: 1.5rem; overflow: hidden; background: #F8FAFC; border: 1px solid #E2E8F0; cursor: pointer; position: relative; transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1); }
+    .gallery-thumb img, .gallery-thumb video { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1); }
+    .gallery-thumb:hover { border-color: #0052B4; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0, 82, 180, 0.08); }
+    .gallery-thumb:hover img, .gallery-thumb:hover video { transform: scale(1.05); }
+    .gallery-thumb .video-badge { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(10, 34, 64, 0.3); backdrop-filter: blur(2px); }
 
-    /* Lightbox */
-    .lightbox { position: fixed; inset: 0; background: rgba(6, 11, 26, 0.95); backdrop-filter: blur(20px); z-index: 9999; display: none; align-items: center; justify-content: center; }
-    .lightbox.active { display: flex; }
+    /* Minimal Stark Lightbox Overlay */
+    .lightbox { position: fixed; inset: 0; background: rgba(248, 250, 252, 0.98); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); z-index: 9999; display: none; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease; }
+    .lightbox.active { display: flex; opacity: 1; }
     .lightbox-inner { position: relative; max-width: 90vw; max-height: 90vh; }
-    .lightbox-inner img, .lightbox-inner video { max-width: 90vw; max-height: 85vh; border-radius: 2rem; object-fit: contain; border: 1px solid rgba(255,255,255,0.08); }
-    .lightbox-close { position: absolute; top: -20px; right: -20px; width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; color: white; transition: all 0.2s; }
-    .lightbox-close:hover { background: #D4AF37; color: black; }
-    .lightbox-nav { position: absolute; top: 50%; transform: translateY(-50%); width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; cursor: pointer; color: white; transition: all 0.2s; }
-    .lightbox-nav:hover { background: #D4AF37; color: black; }
-    .lightbox-prev { left: -60px; }
-    .lightbox-next { right: -60px; }
-    .lightbox-counter { position: absolute; bottom: -36px; left: 50%; transform: translateX(-50%); font-size: 9px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.3em; color: rgba(255,255,255,0.3); white-space: nowrap; }
+    .lightbox-inner img, .lightbox-inner video { max-width: 90vw; max-height: 82vh; border-radius: 2rem; object-fit: contain; border: 1px solid #E2E8F0; background: #FFFFFF; box-shadow: 0 25px 60px rgba(10, 34, 64, 0.08); }
+    
+    .lightbox-close { position: absolute; top: -24px; right: -24px; width: 48px; height: 48px; border-radius: 50%; background: #FFFFFF; border: 1px solid #E2E8F0; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; color: #0A2240; box-shadow: 0 4px 12px rgba(10, 34, 64, 0.05); transition: all 0.3s; z-index: 5; }
+    .lightbox-close:hover { background: #0A2240; color: #FFFFFF; border-color: #0A2240; }
+    
+    .lightbox-nav { position: absolute; top: 50%; transform: translateY(-50%); width: 48px; height: 48px; border-radius: 50%; background: #FFFFFF; border: 1px solid #E2E8F0; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #0A2240; box-shadow: 0 4px 12px rgba(10, 34, 64, 0.05); transition: all 0.3s; z-index: 5; }
+    .lightbox-nav:hover { background: #0052B4; color: #FFFFFF; border-color: #0052B4; }
+    .lightbox-prev { left: -64px; }
+    .lightbox-next { right: -64px; }
+    @media (max-width: 1024px) { .lightbox-prev { left: 16px; } .lightbox-next { right: 16px; } }
+    
+    .lightbox-counter { position: absolute; bottom: -36px; left: 50%; transform: translateX(-50%); font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.25em; color: #64748B; white-space: nowrap; }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="min-h-screen bg-[#060B1A] py-12 px-[6%] text-white">
+<div class="min-h-screen bg-[#F8FAFC] py-12 px-[6%] text-[#0A2240]">
 
-    <!-- NAV -->
     <nav class="mb-12 flex items-center justify-between">
         <a href="{% url 'annonces_list' %}" class="flex items-center gap-4 group">
-            <div class="w-12 h-12 glass-card flex items-center justify-center rounded-2xl group-hover:border-[#D4AF37] transition-all">
-                <i class="fa-solid fa-arrow-left text-white/40 group-hover:text-[#D4AF37]"></i>
+            <div class="w-12 h-12 architect-card flex items-center justify-center rounded-2xl group-hover:border-[#0052B4] transition-all duration-300">
+                <i class="fa-solid fa-arrow-left text-slate-400 group-hover:text-[#0052B4] transition-colors"></i>
             </div>
             <div>
-                <span class="text-[9px] font-black uppercase tracking-[0.3em] text-white/20 block">Catalogue</span>
-                <span class="text-sm font-bold uppercase tracking-tighter">Retour à la liste</span>
+                <span class="text-[9px] font-black uppercase tracking-[0.3em] text-slate-400/70 block">{% trans "Catalogue" %}</span>
+                <span class="text-xs font-black uppercase tracking-tight text-[#0A2240]">{% trans "Retour à la liste" %}</span>
             </div>
         </a>
         <div class="hidden md:block text-right">
-            <span class="text-white/20 text-[10px] font-black uppercase tracking-[0.4em]">Référence: HCI-{{ annonce.id }}</span>
+            <span class="text-slate-400 font-black text-[10px] uppercase tracking-[0.4em] bg-white border border-slate-200 px-4 py-2 rounded-xl shadow-sm">Ref: HCI-{{ annonce.id }}</span>
         </div>
     </nav>
 
     <main class="grid grid-cols-1 lg:grid-cols-3 gap-12">
 
-        <!-- LEFT: Main Content -->
         <div class="lg:col-span-2 space-y-10">
 
-            <!-- HERO: first image media -->
             <div class="hero-container group">
-                {% with annonce.media.all as all_media %}
-                    {% for m in all_media %}
-                        {% if not m.is_video %}
-                            <img src="{{ m.file.url }}" alt="{{ annonce.titre }}" 
-                                 class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105">
-                            {% if forloop.first %}{% endif %}
-                        {% endif %}
-                    {% empty %}
-                        <div class="w-full h-full bg-white/5 flex items-center justify-center">
-                            <i class="fa-solid fa-city text-8xl text-white/5"></i>
-                        </div>
-                    {% endfor %}
-                    {% if all_media|length == 0 %}
-                        <div class="w-full h-full bg-white/5 flex items-center justify-center">
-                            <i class="fa-solid fa-city text-8xl text-white/5"></i>
+                {% with media_list=annonce.media.all %}
+                    <div class="w-full h-full relative">
+                        {% for m in media_list %}
+                            {% if not m.is_video %}
+                                <img src="{{ m.file.url }}" alt="{{ annonce.titre }}" 
+                                     class="w-full h-full object-cover absolute inset-0 z-0 transition-transform duration-1000 group-hover:scale-103">
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+
+                    {% if not media_list %}
+                        <div class="w-full h-full bg-white flex items-center justify-center">
+                            <i class="fa-solid fa-city text-8xl text-slate-100"></i>
                         </div>
                     {% endif %}
                 {% endwith %}
 
-                <div class="absolute inset-0 bg-gradient-to-t from-[#060B1A] via-transparent to-transparent opacity-80"></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-[#0A2240]/90 via-[#0A2240]/20 to-transparent z-5"></div>
 
-                <div class="absolute bottom-12 left-12">
-                    <span class="bg-[#D4AF37] text-black font-black text-[9px] uppercase px-5 py-2 rounded-full mb-5 inline-block tracking-widest">
+                <div class="absolute bottom-10 left-10 right-10 z-10">
+                    <span class="bg-[#0052B4] text-white font-black text-[8px] uppercase tracking-widest px-4 py-2 rounded-full mb-4 inline-block shadow-sm">
                         {{ annonce.get_type_bien_display }}
                     </span>
-                    <h1 class="text-4xl md:text-6xl font-black uppercase tracking-tighter leading-none">
+                    <h1 class="text-3xl md:text-5xl font-black uppercase tracking-tight leading-none text-white max-w-2xl drop-shadow-sm">
                         {{ annonce.titre }}
                     </h1>
                 </div>
 
-                <!-- Media count pill -->
                 {% with annonce.media.count as total %}
                 {% if total > 1 %}
-                <div class="absolute top-6 right-6 bg-black/60 backdrop-blur-md px-5 py-2 rounded-full border border-white/10 flex items-center gap-2">
-                    <i class="fa-solid fa-images text-[#D4AF37] text-xs"></i>
-                    <span class="text-[9px] font-black uppercase tracking-widest text-white">{{ total }} médias</span>
+                <div class="absolute top-6 right-6 bg-white/90 backdrop-blur-md px-4 py-2 rounded-full border border-white/60 flex items-center gap-2 shadow-sm z-10">
+                    <i class="fa-solid fa-images text-[#0052B4] text-xs"></i>
+                    <span class="text-[9px] font-black uppercase tracking-widest text-[#0A2240]">{{ total }} {% trans "médias" %}</span>
                 </div>
                 {% endif %}
                 {% endwith %}
             </div>
 
-            <!-- DESCRIPTION -->
-            <div class="glass-card rounded-[3rem] p-10 md:p-14">
-                <h2 class="text-[#D4AF37] text-[10px] font-black uppercase tracking-[0.4em] mb-8 flex items-center gap-3">
-                    <span class="w-8 h-[1px] bg-[#D4AF37]/30"></span> Description du bien
+            <div class="architect-card rounded-[3rem] p-10 md:p-14">
+                <h2 class="text-[#0052B4] text-[10px] font-black uppercase tracking-[0.4em] mb-8 flex items-center gap-3">
+                    <span class="w-8 h-[2px] bg-[#0052B4]/20"></span> {% trans "Description du bien" %}
                 </h2>
-                <p class="text-white/60 leading-relaxed text-xl font-light whitespace-pre-line">
+                <p class="text-slate-600 leading-relaxed text-lg font-medium whitespace-pre-line">
                     {{ annonce.description }}
                 </p>
             </div>
 
-            <!-- MEDIA GALLERY -->
             {% with annonce.media.all as all_media %}
             {% if all_media %}
-            <div class="glass-card rounded-[3rem] p-10">
-                <h2 class="text-[#D4AF37] text-[10px] font-black uppercase tracking-[0.4em] mb-8 flex items-center gap-3">
-                    <span class="w-8 h-[1px] bg-[#D4AF37]/30"></span> Galerie Média
-                    <span class="ml-auto text-white/20 font-black text-[9px]">{{ all_media|length }} fichier(s)</span>
+            <div class="architect-card rounded-[3rem] p-10">
+                <h2 class="text-[#0052B4] text-[10px] font-black uppercase tracking-[0.4em] mb-8 flex items-center gap-3">
+                    <span class="w-8 h-[2px] bg-[#0052B4]/20"></span> {% trans "Galerie Média" %}
+                    <span class="ml-auto text-slate-400 font-black text-[9px] bg-slate-100 px-3 py-1 rounded-full">{{ all_media|length }} {% trans "fichier(s)" %}</span>
                 </h2>
                 <div class="gallery-grid">
                     {% for media in all_media %}
@@ -155,8 +144,8 @@
                         {% if media.is_video %}
                             <video src="{{ media.file.url }}" muted preload="metadata"></video>
                             <div class="video-badge">
-                                <div style="width:40px;height:40px;border-radius:50%;background:rgba(212,175,55,0.9);display:flex;align-items:center;justify-content:center;">
-                                    <i class="fa-solid fa-play text-black text-xs ml-0.5"></i>
+                                <div class="w-10 h-10 rounded-full bg-[#0052B4] flex items-center justify-center text-white shadow-md">
+                                    <i class="fa-solid fa-play text-xs ml-0.5"></i>
                                 </div>
                             </div>
                         {% else %}
@@ -169,10 +158,9 @@
             {% endif %}
             {% endwith %}
 
-            <!-- MAP -->
-            <div class="glass-card rounded-[3rem] p-10">
-                <h2 class="text-[#D4AF37] text-[10px] font-black uppercase tracking-[0.4em] mb-8 flex items-center gap-3">
-                    <span class="w-8 h-[1px] bg-[#D4AF37]/30"></span> Localisation Précise
+            <div class="architect-card rounded-[3rem] p-10">
+                <h2 class="text-[#0052B4] text-[10px] font-black uppercase tracking-[0.4em] mb-8 flex items-center gap-3">
+                    <span class="w-8 h-[2px] bg-[#0052B4]/20"></span> {% trans "Localisation Précise" %}
                 </h2>
                 <div class="map-container">
                     <iframe 
@@ -183,87 +171,84 @@
                         marginheight="0" 
                         marginwidth="0" 
                         src="https://maps.google.com/maps?q={{ annonce.ville|urlencode }}&t=&z=13&ie=UTF8&iwloc=&output=embed">
-                    </iframe>
+                     Cenitaf</iframe>
                 </div>
-                <div class="mt-6 flex items-center gap-3 text-white/40">
-                    <i class="fa-solid fa-circle-info text-[#D4AF37]"></i>
-                    <p class="text-[10px] font-bold uppercase tracking-widest">Localisation basée sur la ville de {{ annonce.ville }}</p>
+                <div class="mt-6 flex items-center gap-3 text-slate-400">
+                    <i class="fa-solid fa-circle-info text-[#0052B4]"></i>
+                    <p class="text-[9px] font-bold uppercase tracking-widest">{% trans "Localisation basée sur la ville de" %} {{ annonce.ville }}</p>
                 </div>
             </div>
         </div>
 
-        <!-- RIGHT: Sidebar -->
         <div class="space-y-6">
 
-            <!-- Price + CTA -->
-            <div class="glass-card rounded-[2.5rem] p-10 relative overflow-hidden border-[#D4AF37]/20">
-                <div class="absolute -top-10 -right-10 w-40 h-40 bg-[#D4AF37]/5 rounded-full blur-3xl"></div>
-                <label class="text-white/30 text-[10px] font-black uppercase tracking-[0.4em] block mb-3">Estimation HCI</label>
-                <div class="text-5xl font-black gold-gradient-text tracking-tighter mb-8">
-                    {{ annonce.prix }} <span class="text-xl text-[#D4AF37]">DH</span>
+            <div class="architect-card rounded-[2.5rem] p-10 relative overflow-hidden border-slate-200/80">
+                <div class="absolute -top-10 -right-10 w-40 h-40 bg-[#0052B4]/5 rounded-full blur-3xl"></div>
+                <label class="text-slate-400 text-[10px] font-black uppercase tracking-[0.4em] block mb-2">{% trans "Estimation HCI" %}</label>
+                <div class="text-4xl font-black text-[#0A2240] tracking-tight mb-8">
+                    {{ annonce.prix }} <span class="text-lg font-black text-[#0052B4]">DH</span>
                 </div>
-                <div class="space-y-4 mb-10">
-                    <div class="flex items-center gap-5">
-                        <div class="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center">
-                            <i class="fa-solid fa-location-dot text-[#D4AF37]"></i>
+                
+                <div class="space-y-4 mb-8 border-t border-b border-slate-100 py-6">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-[#0052B4]">
+                            <i class="fa-solid fa-location-dot"></i>
                         </div>
                         <div>
-                            <p class="text-white/30 text-[9px] font-black uppercase tracking-widest">Ville</p>
-                            <p class="font-bold text-lg">{{ annonce.ville }}</p>
+                            <p class="text-slate-400 text-[8px] font-black uppercase tracking-widest">{% trans "Ville" %}</p>
+                            <p class="font-extrabold text-slate-700 text-sm uppercase">{{ annonce.ville }}</p>
                         </div>
                     </div>
-                    <div class="flex items-center gap-5">
-                        <div class="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center">
-                            <i class="fa-solid fa-tag text-[#D4AF37]"></i>
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-[#0052B4]">
+                            <i class="fa-solid fa-tag"></i>
                         </div>
                         <div>
-                            <p class="text-white/30 text-[9px] font-black uppercase tracking-widest">Transaction</p>
-                            <p class="font-bold text-lg">{{ annonce.get_type_transaction_display }}</p>
+                            <p class="text-slate-400 text-[8px] font-black uppercase tracking-widest">{% trans "Transaction" %}</p>
+                            <p class="font-extrabold text-slate-700 text-sm uppercase">{{ annonce.get_type_transaction_display }}</p>
                         </div>
                     </div>
                 </div>
-                <button class="w-full bg-[#D4AF37] text-black font-black py-6 rounded-2xl uppercase tracking-[0.2em] text-[10px] hover:scale-[1.02] hover:shadow-[0_20px_40px_rgba(212,175,55,0.2)] transition-all active:scale-95">
-                    Contacter l'expert <i class="fa-solid fa-paper-plane ml-2"></i>
+
+                <button class="w-full bg-[#0A2240] text-white font-black py-5 rounded-2xl uppercase tracking-[0.15em] text-[10px] hover:bg-[#0052B4] hover:shadow-[0_12px_30px_rgba(0,82,180,0.15)] transition-all duration-300 transform active:scale-98">
+                    {% trans "Contacter l'expert" %} <i class="fa-solid fa-paper-plane ml-2"></i>
                 </button>
             </div>
 
-            <!-- Author -->
-            <div class="glass-card rounded-[2.5rem] p-8 flex items-center gap-6">
+            <div class="architect-card rounded-[2.5rem] p-8 flex items-center gap-5">
                 <div class="relative">
                     {% if annonce.auteur.profile.image %}
-                        <img src="{{ annonce.auteur.profile.image.url }}" class="w-16 h-16 rounded-2xl object-cover border border-white/10">
+                        <img src="{{ annonce.auteur.profile.image.url }}" class="w-14 h-14 rounded-2xl object-cover border border-slate-100">
                     {% else %}
-                        <div class="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10">
-                            <i class="fa-solid fa-user text-white/20 text-xl"></i>
+                        <div class="w-14 h-14 rounded-2xl bg-slate-50 flex items-center justify-center border border-slate-100 text-slate-400">
+                            <i class="fa-solid fa-user text-lg"></i>
                         </div>
                     {% endif %}
-                    <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 border-4 border-[#060B1A] rounded-full"></div>
+                    <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 border-2 border-white rounded-full shadow-sm"></div>
                 </div>
                 <div>
-                    <p class="text-white/30 text-[9px] font-black uppercase tracking-widest">Annonceur</p>
-                    <p class="font-black text-lg leading-tight uppercase">{{ annonce.auteur.get_full_name|default:annonce.auteur.username }}</p>
-                    <p class="text-[#D4AF37] text-[10px] font-black uppercase italic tracking-tighter">Partenaire HCI Certifié</p>
+                    <p class="text-slate-400 text-[8px] font-black uppercase tracking-widest">{% trans "Annonceur" %}</p>
+                    <p class="font-black text-[#0A2240] text-md leading-tight uppercase">{{ annonce.auteur.get_full_name|default:annonce.auteur.username }}</p>
+                    <p class="text-[#0052B4] text-[9px] font-black uppercase tracking-tight mt-0.5">{% trans "Partenaire HCI Certifié" %}</p>
                 </div>
             </div>
 
-            <!-- Meta cards -->
             <div class="grid grid-cols-2 gap-4">
-                <div class="glass-card rounded-[2rem] p-6 text-center">
-                    <i class="fa-solid fa-calendar-day text-white/10 text-xl mb-3"></i>
-                    <p class="text-[8px] text-white/30 font-black uppercase tracking-widest mb-1">Publiée le</p>
-                    <p class="text-xs font-black uppercase">{{ annonce.date_pub|date:"d M Y" }}</p>
+                <div class="architect-card rounded-[2rem] p-6 text-center">
+                    <i class="fa-solid fa-calendar-day text-slate-300 text-lg mb-2"></i>
+                    <p class="text-[8px] text-slate-400 font-black uppercase tracking-widest mb-0.5">{% trans "Publiée le" %}</p>
+                    <p class="text-xs font-black text-[#0A2240] uppercase">{{ annonce.date_pub|date:"d M Y" }}</p>
                 </div>
-                <div class="glass-card rounded-[2rem] p-6 text-center">
-                    <i class="fa-solid fa-photo-film text-white/10 text-xl mb-3"></i>
-                    <p class="text-[8px] text-white/30 font-black uppercase tracking-widest mb-1">Médias</p>
-                    <p class="text-xs font-black uppercase">{{ annonce.media.count }}</p>
+                <div class="architect-card rounded-[2rem] p-6 text-center">
+                    <i class="fa-solid fa-photo-film text-slate-300 text-lg mb-2"></i>
+                    <p class="text-[8px] text-slate-400 font-black uppercase tracking-widest mb-0.5">{% trans "Médias" %}</p>
+                    <p class="text-xs font-black text-[#0A2240] uppercase">{{ annonce.media.count }}</p>
                 </div>
             </div>
         </div>
     </main>
 </div>
 
-<!-- LIGHTBOX -->
 <div class="lightbox" id="lightbox" onclick="closeLightboxOnBackdrop(event)">
     <div class="lightbox-inner" id="lightbox-inner">
         <div class="lightbox-close" onclick="closeLightbox()">✕</div>
@@ -277,7 +262,6 @@
 
 {% block extra_js %}
 <script>
-    // Build media list from Django context
     const mediaList = [
         {% for media in annonce.media.all %}
         { url: "{{ media.file.url }}", isVideo: {{ media.is_video|yesno:"true,false" }} },
@@ -289,14 +273,18 @@
     function openLightbox(index) {
         currentIndex = index;
         renderLightboxMedia();
-        document.getElementById('lightbox').classList.add('active');
+        const lb = document.getElementById('lightbox');
+        lb.style.display = 'flex';
+        setTimeout(() => lb.classList.add('active'), 10);
         document.body.style.overflow = 'hidden';
     }
 
     function closeLightbox() {
-        document.getElementById('lightbox').classList.remove('active');
+        const lb = document.getElementById('lightbox');
+        lb.classList.remove('active');
+        setTimeout(() => lb.style.display = 'none', 300);
         document.body.style.overflow = '';
-        // Pause any playing video
+        
         const vid = document.querySelector('#lightbox-media video');
         if (vid) vid.pause();
     }
@@ -315,24 +303,21 @@
         const counter = document.getElementById('lightbox-counter');
         const item = mediaList[currentIndex];
 
-        // Pause previous video
         const prevVid = container.querySelector('video');
         if (prevVid) prevVid.pause();
 
         if (item.isVideo) {
-            container.innerHTML = `<video src="${item.url}" controls autoplay style="max-width:90vw;max-height:85vh;border-radius:2rem;border:1px solid rgba(255,255,255,0.08);"></video>`;
+            container.innerHTML = `<video src="${item.url}" controls autoplay class="max-w-[90vw] max-h-[82vh] border border-slate-200 rounded-3xl bg-black shadow-lg"></video>`;
         } else {
-            container.innerHTML = `<img src="${item.url}" style="max-width:90vw;max-height:85vh;border-radius:2rem;object-fit:contain;border:1px solid rgba(255,255,255,0.08);">`;
+            container.innerHTML = `<img src="${item.url}" class="max-w-[90vw] max-h-[82vh] object-contain border border-slate-200 rounded-3xl bg-white shadow-lg">`;
         }
 
         counter.innerText = `${currentIndex + 1} / ${mediaList.length}`;
 
-        // Hide nav if only 1 item
         document.querySelector('.lightbox-prev').style.display = mediaList.length > 1 ? 'flex' : 'none';
         document.querySelector('.lightbox-next').style.display = mediaList.length > 1 ? 'flex' : 'none';
     }
 
-    // Keyboard navigation
     document.addEventListener('keydown', (e) => {
         if (!document.getElementById('lightbox').classList.contains('active')) return;
         if (e.key === 'ArrowRight') shiftLightbox(1);

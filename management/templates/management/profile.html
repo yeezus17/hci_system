@@ -1,30 +1,85 @@
 {% extends 'management/base.html' %}
 {% load static %}
+{% load i18n %}
 
 {% block title %}HCI | Dashboard - {{ user.username }}{% endblock %}
 
 {% block extra_css %}
 <style>
-    :root { --glass: rgba(255, 255, 255, 0.03); }
-    /* Grid background specific to dashboard */
+    :root {
+        --architect-blue: #0052B4;
+        --architect-navy: #0A2240;
+        --architect-slate: #64748B;
+        --architect-bg: #F8FAFC;
+        --architect-border: #E2E8F0;
+    }
+
+    /* Minimalist Light Architecture Grid Background Pattern */
     .dashboard-bg {
-        background-image: radial-gradient(circle at 2px 2px, rgba(212, 175, 55, 0.05) 1px, transparent 0);
-        background-size: 40px 40px;
+        background-color: var(--architect-bg);
+        background-image: radial-gradient(circle at 1px 1px, #E2E8F0 1px, transparent 0);
+        background-size: 32px 32px;
     }
+
     .glass-panel { 
-        background: var(--glass); 
-        border: 1px solid rgba(255, 255, 255, 0.08); 
-        backdrop-filter: blur(20px); 
+        background: #FFFFFF; 
+        border: 1px solid var(--architect-border); 
+        box-shadow: 0 10px 40px rgba(10, 34, 64, 0.03);
     }
+
     .stat-card {
-        background: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01));
-        border: 1px solid rgba(255,255,255,0.05);
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        background: #FFFFFF;
+        border: 1px solid var(--architect-border);
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     }
-    .stat-card:hover { border-color: var(--gold); transform: translateY(-5px); }
+    .stat-card:hover { 
+        border-color: var(--architect-blue); 
+        transform: translateY(-4px);
+        box-shadow: 0 12px 30px rgba(0, 82, 180, 0.05);
+    }
     
-    input, textarea { background: rgba(255,255,255,0.05) !important; border: 1px solid rgba(255,255,255,0.1) !important; color: white !important; outline: none; }
-    input:focus, textarea:focus { border-color: var(--gold) !important; }
+    .input-field { 
+        box-sizing: border-box;
+        background: #F8FAFC; 
+        border: 1px solid var(--architect-border); 
+        color: var(--architect-navy); 
+        font-family: 'DM Sans', sans-serif;
+        font-weight: 600;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); 
+    }
+    .input-field::placeholder {
+        color: var(--architect-slate);
+        opacity: 0.4;
+    }
+    .input-field:focus { 
+        border-color: var(--architect-blue); 
+        background: #FFFFFF; 
+        outline: none; 
+        box-shadow: 0 0 0 4px rgba(0, 82, 180, 0.06);
+    }
+    
+    .btn-action {
+        background: var(--architect-blue);
+        border: 1px solid var(--architect-blue);
+        color: #FFFFFF;
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .btn-action:hover {
+        background: var(--architect-navy);
+        border-color: var(--architect-navy);
+        box-shadow: 0 12px 25px rgba(10, 34, 64, 0.12);
+    }
+
+    .btn-secondary {
+        background: #FFFFFF;
+        border: 1px solid var(--architect-border);
+        color: var(--architect-slate);
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .btn-secondary:hover {
+        border-color: var(--architect-navy);
+        color: var(--architect-navy);
+    }
     
     .hidden-mode { display: none !important; }
     @keyframes grow { from { width: 0; } to { width: var(--progress); } }
@@ -33,153 +88,163 @@
 {% endblock %}
 
 {% block content %}
-<div class="dashboard-bg min-h-screen pt-32 pb-12 px-4 md:px-12 flex items-center justify-center relative overflow-hidden">
-    <div class="fixed -top-24 -left-24 w-96 h-96 bg-gold/10 rounded-full blur-[120px] pointer-events-none"></div>
-    <div class="fixed -bottom-24 -right-24 w-96 h-96 bg-gold/5 rounded-full blur-[120px] pointer-events-none"></div>
+<div class="dashboard-bg min-h-screen pt-32 pb-16 px-4 md:px-12 relative overflow-hidden">
+    <!-- Ambient architectural drop vectors matching structural templates -->
+    <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-50/40 rounded-full blur-[140px] pointer-events-none z-0"></div>
+    <div class="absolute bottom-0 left-0 w-[400px] h-[400px] bg-slate-100 rounded-full blur-[100px] pointer-events-none z-0"></div>
 
-    <div class="max-w-6xl w-full grid grid-cols-1 lg:grid-cols-12 gap-8 relative z-10">
+    <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 relative z-10">
         
-        <div class="lg:col-span-4 space-y-6">
-            <div class="glass-panel rounded-[3rem] p-10 text-center">
-                <div class="relative w-44 h-44 mx-auto mb-8">
-                    <div class="w-full h-full rounded-full border-2 border-gold p-2 overflow-hidden shadow-[0_0_30px_rgba(212,175,55,0.2)] bg-navy">
+        <!-- LEFT BOUND MODULE: Profile Identity Metadata Deck -->
+        <div class="lg:col-span-4 space-y-8">
+            <div class="glass-panel rounded-[2.5rem] p-10 text-center relative">
+                <div class="relative w-40 h-40 mx-auto mb-6">
+                    <div class="w-full h-full rounded-full border border-slate-200 p-1.5 overflow-hidden bg-white shadow-sm">
                         <img id="avatar-preview" src="{% if profile.image %}{{ profile.image.url }}{% else %}{% static 'img/default-avatar.png' %}{% endif %}" class="w-full h-full object-cover rounded-full">
                     </div>
-                    <label for="image-upload" id="camera-btn" class="hidden-mode absolute bottom-2 right-2 bg-gold text-navy w-10 h-10 rounded-full flex items-center justify-center cursor-pointer border-4 border-[#060B1A] hover:scale-110 transition-all shadow-xl">
-                        <i class="fa-solid fa-camera text-sm"></i>
+                    <label for="image-upload" id="camera-btn" class="hidden-mode absolute bottom-1 right-1 bg-blue-600 text-white w-9 h-9 rounded-full flex items-center justify-center cursor-pointer border-4 border-white hover:scale-110 transition-all shadow-md">
+                        <i class="fa-solid fa-camera text-xs"></i>
                     </label>
                 </div>
                 
-                <h2 class="brand-font text-2xl font-black uppercase tracking-tighter">{{ user.username }}</h2>
-                <p class="text-[10px] text-white/40 uppercase tracking-[0.3em] mt-2 mb-8">Membre HCI #{{ user.id|add:"1000" }}</p>
+                <h2 class="brand-font text-2xl font-black uppercase tracking-tighter text-slate-900">{{ user.username }}</h2>
+                <p class="text-[9px] text-slate-400 font-black uppercase tracking-[0.3em] mt-2 mb-8">Membre HCI #{{ user.id|add:"1000" }}</p>
 
-                <div class="space-y-3 px-4 mb-10">
-                    <div class="flex justify-between text-[10px] font-black uppercase tracking-widest text-gold/60">
+                <!-- Profile Completion Analytics Gauge -->
+                <div class="space-y-3 px-2 mb-8">
+                    <div class="flex justify-between text-[9px] font-black uppercase tracking-widest text-blue-600">
                         <span>Complétion Profil</span>
                         <span>{{ completion_percentage }}%</span>
                     </div>
-                    <div class="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
-                        <div class="progress-fill h-full bg-gold shadow-[0_0_15px_rgba(212,175,55,0.5)]" style="--progress: {{ completion_percentage }}%;"></div>
+                    <div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                        <div class="progress-fill h-full bg-blue-600 rounded-full" style="--progress: {{ completion_percentage }}%;"></div>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-2 gap-4 pt-10 border-t border-white/5">
-                    <div class="text-left">
-                        <p class="text-[9px] text-white/30 uppercase font-black">Annonces</p>
-                        <p class="text-xl font-bold">{{ annonce_count|default:"0" }}</p>
+                <!-- Numerical Status Display Readout Grid -->
+                <div class="grid grid-cols-2 gap-4 pt-8 border-t border-slate-100">
+                    <div class="text-left pl-2">
+                        <p class="text-[8px] text-slate-400 uppercase font-black tracking-wider">Annonces</p>
+                        <p class="text-2xl font-black text-slate-900 mt-1">{{ annonce_count|default:"0" }}</p>
                     </div>
-                    <div class="text-left">
-                        <p class="text-[9px] text-white/30 uppercase font-black">Statut</p>
-                        <p class="text-xl font-bold {% if profile.is_approved_editor %}text-green-500{% else %}text-amber-500{% endif %}">
+                    <div class="text-left border-l border-slate-100 pl-6">
+                        <p class="text-[8px] text-slate-400 uppercase font-black tracking-wider">Statut</p>
+                        <p class="text-sm font-black uppercase tracking-widest mt-2 {% if profile.is_approved_editor %}text-emerald-600{% else %}text-amber-500{% endif %}">
                             {% if profile.is_approved_editor %}Actif{% else %}Attente{% endif %}
                         </p>
                     </div>
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 gap-4">
-                <a href="{% url 'home' %}" class="stat-card p-5 rounded-2xl flex items-center gap-4 hover:bg-white/5 transition-all group">
-                    <div class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center group-hover:bg-gold/20 transition-all">
-                        <i class="fa-solid fa-house text-gold"></i>
+            <!-- Contextual Quick Action Navigation Anchors -->
+            <div class="space-y-3">
+                <a href="{% url 'home' %}" class="stat-card p-5 rounded-2xl flex items-center gap-4 hover:bg-slate-50 transition-all group">
+                    <div class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center group-hover:bg-blue-50 transition-all">
+                        <i class="fa-solid fa-house text-slate-400 group-hover:text-blue-600 transition-colors"></i>
                     </div>
-                    <span class="text-[11px] font-black uppercase tracking-widest text-white/50 group-hover:text-white">Retour à l'accueil</span>
+                    <span class="text-[10px] font-black uppercase tracking-widest text-slate-500 group-hover:text-slate-900 transition-colors">Retour à l'accueil</span>
                 </a>
-                <a href="{% url 'publier_annonce' %}" class="stat-card p-5 rounded-2xl flex items-center gap-4 hover:bg-white/5 transition-all group border-gold/20">
-                    <div class="w-10 h-10 rounded-xl bg-gold flex items-center justify-center">
-                        <i class="fa-solid fa-plus text-navy"></i>
+                <a href="{% url 'publier_annonce' %}" class="p-5 rounded-2xl flex items-center gap-4 bg-blue-600 border border-blue-600 hover:bg-slate-900 hover:border-slate-900 transition-all shadow-sm group">
+                    <div class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center">
+                        <i class="fa-solid fa-plus text-white"></i>
                     </div>
-                    <span class="text-[11px] font-black uppercase tracking-widest text-gold">Publier une annonce</span>
+                    <span class="text-[10px] font-black uppercase tracking-widest text-white">Publier une annonce</span>
                 </a>
             </div>
         </div>
 
+        <!-- RIGHT BOUND MODULE: Worksurface Container & Form Workspaces -->
         <div class="lg:col-span-8">
-            <div class="glass-panel rounded-[3.5rem] p-8 md:p-12 min-h-[700px] flex flex-col relative overflow-hidden">
+            <div class="glass-panel rounded-[2.5rem] p-8 md:p-12 min-h-[680px] flex flex-col relative overflow-hidden">
                 
+                <!-- Feedback Toast Architecture Notifications -->
                 {% if messages %}
                     {% for message in messages %}
-                        <div id="success-toast" class="absolute top-8 right-12 p-4 rounded-2xl bg-gold/10 border border-gold/20 flex items-center gap-4 animate-bounce z-50">
-                            <i class="fa-solid fa-circle-check text-gold"></i>
-                            <span class="text-[10px] font-black uppercase tracking-widest text-gold">{{ message }}</span>
+                        <div id="success-toast" class="absolute top-8 right-12 p-4 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center gap-3 shadow-sm z-50">
+                            <i class="fa-solid fa-circle-check text-emerald-600"></i>
+                            <span class="text-[9px] font-black uppercase tracking-widest text-emerald-800">{{ message }}</span>
                         </div>
                     {% endfor %}
                 {% endif %}
 
-                <div class="flex flex-col md:flex-row justify-between items-start mb-12 gap-6">
+                <!-- Worksurface Dynamic Structural Header Elements -->
+                <div class="flex flex-col sm:flex-row justify-between items-start mb-12 gap-6 pb-8 border-b border-slate-100">
                     <div>
-                        <h1 class="brand-font text-5xl font-black uppercase tracking-tighter leading-none">
-                            Espace <span class="text-gold">Privé</span>
+                        <h1 class="brand-font text-4xl font-black uppercase tracking-tighter text-slate-900 leading-none">
+                            Espace <span class="text-blue-600">Privé</span>
                         </h1>
-                        <p class="text-white/20 text-xs mt-3 uppercase tracking-widest font-bold">Identifiant Unique: #HCI-{{ user.id|add:"1000" }}</p>
+                        <p class="text-slate-400 text-[9px] mt-3 uppercase tracking-widest font-black">Identifiant Unique: #HCI-{{ user.id|add:"1000" }}</p>
                     </div>
-                    <button id="toggle-edit" onclick="toggleMode()" class="px-8 py-3 rounded-2xl border border-white/10 text-white/60 text-[10px] font-black uppercase tracking-widest hover:border-gold hover:text-gold transition-all">
+                    <button id="toggle-edit" onclick="toggleMode()" class="btn-secondary px-6 py-3.5 rounded-xl text-[9px] font-black uppercase tracking-widest">
                         Modifier le profil
                     </button>
                 </div>
 
+                <!-- Optimization Suggestion Notification Module Banner -->
                 {% if completion_percentage < 100 %}
-                <div id="view-tip" class="mb-10 p-5 rounded-2xl bg-gold/5 border border-gold/10 flex items-center justify-between">
-                    <div class="flex items-center gap-4">
-                        <i class="fa-solid fa-lightbulb text-gold animate-pulse"></i>
-                        <p class="text-[10px] font-bold uppercase tracking-widest text-gold/60">Optimisez votre visibilité en complétant votre biographie.</p>
-                    </div>
+                <div id="view-tip" class="mb-10 p-5 rounded-2xl bg-blue-50/50 border border-blue-100 flex items-center gap-4">
+                    <i class="fa-solid fa-lightbulb text-blue-600"></i>
+                    <p class="text-[9px] font-black uppercase tracking-widest text-blue-900/60">Optimisez votre visibilité en complétant votre biographie.</p>
                 </div>
                 {% endif %}
 
-                <div id="view-mode" class="space-y-10">
+                <!-- VIEW CONFIGURATION DATA INTERFACE -->
+                <div id="view-mode" class="space-y-8">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="stat-card p-8 rounded-3xl">
-                            <p class="text-[9px] font-black text-white/20 uppercase tracking-[0.2em] mb-3">Email de contact</p>
-                            <p class="text-sm font-bold tracking-tight text-white/80">{{ user.email|default:"Non renseigné" }}</p>
+                        <div class="stat-card p-6 md:p-8 rounded-2xl">
+                            <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-2">Email de contact</p>
+                            <p class="text-sm font-bold text-slate-800 tracking-tight">{{ user.email|default:"Non renseigné" }}</p>
                         </div>
-                        <div class="stat-card p-8 rounded-3xl">
-                            <p class="text-[9px] font-black text-white/20 uppercase tracking-[0.2em] mb-3">WhatsApp / Tel</p>
-                            <p class="text-sm font-bold tracking-tight text-white/80">{{ profile.phone_number|default:"+212 ..." }}</p>
+                        <div class="stat-card p-6 md:p-8 rounded-2xl">
+                            <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-2">WhatsApp / Tel</p>
+                            <p class="text-sm font-bold text-slate-800 tracking-tight">{{ profile.phone_number|default:"+212 ..." }}</p>
                         </div>
                     </div>
 
-                    <div class="stat-card p-10 rounded-[2.5rem] relative group">
-                        <div class="absolute top-8 right-10 opacity-10 group-hover:opacity-30 transition-opacity">
-                            <i class="fa-solid fa-quote-right text-4xl"></i>
+                    <div class="stat-card p-8 md:p-10 rounded-3xl relative group">
+                        <div class="absolute top-8 right-10 opacity-[0.03] text-slate-900 pointer-events-none">
+                            <i class="fa-solid fa-quote-right text-6xl"></i>
                         </div>
-                        <p class="text-[10px] font-black text-gold uppercase tracking-[0.3em] mb-6">Biographie & Expertise</p>
-                        <p class="text-sm leading-relaxed text-white/50 italic">
-                            "{{ profile.bio|default:"Aucune biographie disponible pour le moment." }}"
+                        <p class="text-[9px] font-black text-blue-600 uppercase tracking-widest mb-4">Biographie & Expertise</p>
+                        <p class="text-sm leading-relaxed text-slate-600 font-medium italic">
+                            "{% if profile.bio %}{{ profile.bio }}{% else %}Aucune biographie disponible pour le moment.{% endif %}"
                         </p>
                     </div>
                 </div>
 
+                <!-- EDIT MUTATION CAPABLE INTERFACE FORM OBJECTS -->
                 <form id="edit-mode" method="POST" enctype="multipart/form-data" class="hidden-mode space-y-6 flex-grow">
                     {% csrf_token %}
                     <input type="file" id="image-upload" name="image" class="hidden" onchange="previewImage(event)">
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="space-y-2">
-                            <label class="text-[9px] font-black text-white/30 ml-4 uppercase tracking-widest">Nom complet</label>
-                            <input type="text" name="first_name" value="{{ user.first_name }}" placeholder="Haitam S." class="w-full px-8 py-5 rounded-[2rem] text-sm font-bold transition-all">
+                            <label class="text-[9px] font-black text-slate-400 ml-2 uppercase tracking-widest">Nom complet</label>
+                            <input type="text" name="first_name" value="{{ user.first_name }}" placeholder="Haitam S." class="input-field w-full px-6 py-4.5 rounded-xl text-sm">
                         </div>
                         <div class="space-y-2">
-                            <label class="text-[9px] font-black text-white/30 ml-4 uppercase tracking-widest">Email Public</label>
-                            <input type="email" name="email" value="{{ user.email }}" placeholder="haitam@example.com" class="w-full px-8 py-5 rounded-[2rem] text-sm font-bold transition-all">
+                            <label class="text-[9px] font-black text-slate-400 ml-2 uppercase tracking-widest">Email Public</label>
+                            <input type="email" name="email" value="{{ user.email }}" placeholder="haitam@example.com" class="input-field w-full px-6 py-4.5 rounded-xl text-sm">
                         </div>
                     </div>
 
                     <div class="space-y-2">
-                        <label class="text-[9px] font-black text-white/30 ml-4 uppercase tracking-widest">Numéro WhatsApp</label>
-                        <input type="tel" name="phone_number" value="{{ profile.phone_number|default:'' }}" placeholder="+212 600 000 000" class="w-full px-8 py-5 rounded-[2rem] text-sm font-bold transition-all">
+                        <label class="text-[9px] font-black text-slate-400 ml-2 uppercase tracking-widest">Numéro WhatsApp</label>
+                        <input type="tel" name="phone_number" value="{{ profile.phone_number|default:'' }}" placeholder="+212 600 000 000" class="input-field w-full px-6 py-4.5 rounded-xl text-sm">
                     </div>
 
                     <div class="space-y-2">
-                        <label class="text-[9px] font-black text-white/30 ml-4 uppercase tracking-widest">Bio (Apparaît sur vos annonces)</label>
-                        <textarea name="bio" rows="4" placeholder="Décrivez votre expertise..." class="w-full px-8 py-6 rounded-[2.5rem] text-sm font-bold transition-all resize-none">{{ profile.bio|default:'' }}</textarea>
+                        <label class="text-[9px] font-black text-slate-400 ml-2 uppercase tracking-widest">Bio (Apparaît sur vos annonces)</label>
+                        <textarea name="bio" rows="4" placeholder="Décrivez votre expertise..." class="input-field w-full px-6 py-5 rounded-2xl text-sm resize-none">{{ profile.bio|default:'' }}</textarea>
                     </div>
 
-                    <div class="flex gap-4 pt-6 mt-auto">
-                        <button type="button" onclick="toggleMode()" class="w-1/3 py-5 rounded-[2rem] border border-white/5 text-white/20 font-black uppercase tracking-widest text-[11px] hover:bg-white/5 transition-all">
+                    <!-- Submission Flow Decision Control Triggers -->
+                    <div class="flex flex-col sm:flex-row gap-4 pt-6 mt-auto">
+                        <button type="button" onclick="toggleMode()" class="btn-secondary w-full sm:w-1/3 py-4.5 rounded-xl text-[10px] font-black uppercase tracking-widest order-2 sm:order-1">
                             Annuler
                         </button>
-                        <button type="submit" class="w-2/3 py-5 rounded-[2rem] bg-gold text-navy font-black uppercase tracking-[0.4em] text-[11px] hover:shadow-[0_20px_40px_rgba(212,175,55,0.3)] transition-all active:scale-95">
-                            Sauvegarder
+                        <button type="submit" class="btn-action w-full sm:w-2/3 py-4.5 rounded-xl text-[10px] font-black uppercase tracking-[0.3em] order-1 sm:order-2 active:scale-[0.99]">
+                            Sauvegarder <i class="fa-solid fa-check ml-1.5"></i>
                         </button>
                     </div>
                 </form>
@@ -195,6 +260,13 @@
             const el = document.getElementById(id);
             if(el) el.classList.toggle('hidden-mode');
         });
+        
+        // Dynamic switch mechanism reading the profile mutation form state
+        const toggleBtn = document.getElementById('toggle-edit');
+        if (toggleBtn) {
+            const isEditing = document.getElementById('view-mode').classList.contains('hidden-mode');
+            toggleBtn.innerText = isEditing ? "Voir mon Profil" : "Modifier le profil";
+        }
     }
 
     function previewImage(event) {
@@ -208,12 +280,14 @@
         }
     }
 
+    // Automated linear fade teardown for UI toast elements
     setTimeout(() => {
         const toast = document.getElementById('success-toast');
         if(toast) {
-            toast.style.transition = "opacity 0.5s ease";
+            toast.style.transition = "all 0.4s cubic-bezier(0.16, 1, 0.3, 1)";
             toast.style.opacity = "0";
-            setTimeout(() => toast.remove(), 500);
+            toast.style.transform = "translateY(-10px)";
+            setTimeout(() => toast.remove(), 400);
         }
     }, 4000);
 </script>

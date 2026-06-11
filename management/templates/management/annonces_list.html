@@ -4,10 +4,11 @@
 
 {% block extra_css %}
 <style>
+    /* Clean Light Architecture Filter Tiles */
     .filter-tile {
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        background: rgba(255, 255, 255, 0.02);
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 1px solid #E2E8F0;
+        background: #FFFFFF;
+        transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -15,78 +16,88 @@
         padding: 1.5rem;
         border-radius: 1.5rem;
         cursor: pointer;
+        box-shadow: 0 2px 4px rgba(10, 34, 64, 0.02);
     }
-    .filter-tile i { font-size: 18px; margin-bottom: 8px; color: rgba(255, 255, 255, 0.2); }
-    .filter-tile span { font-size: 8px; font-weight: 900; text-transform: uppercase; color: rgba(255, 255, 255, 0.4); }
-    .filter-tile:hover, .filter-tile.active { border-color: var(--hci-gold); background: rgba(212, 175, 55, 0.05); }
-    .filter-tile:hover i, .filter-tile.active i { color: var(--hci-gold); }
+    .filter-tile i { font-size: 18px; margin-bottom: 8px; color: #94A3B8; transition: color 0.3s; }
+    .filter-tile span { font-size: 8px; font-weight: 900; text-transform: uppercase; color: #64748B; transition: color 0.3s; }
+    
+    /* Interactive Active States matching New Theme */
+    .filter-tile:hover, .filter-tile.active { border-color: #0052B4; background: rgba(0, 82, 180, 0.03); }
+    .filter-tile:hover i, .filter-tile.active i { color: #0052B4; }
+    .filter-tile:hover span, .filter-tile.active span { color: #0A2240; }
 
-    .market-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.2rem; }
-    .market-card { background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border); border-radius: 1.5rem; overflow: hidden; display: flex; flex-direction: column; transition: 0.4s; }
-    .market-card:hover { border-color: var(--hci-gold); transform: translateY(-5px); }
-    .card-visual { height: 160px; position: relative; overflow: hidden; background: #000; }
-    .card-visual img { width: 100%; height: 100%; object-fit: cover; opacity: 0.8; transition: transform 0.6s ease; }
-    .market-card:hover .card-visual img { transform: scale(1.05); }
-    .card-body { padding: 1.2rem; flex-grow: 1; display: flex; flex-direction: column; }
-    .property-title { font-size: 1rem; font-weight: 800; text-transform: uppercase; margin: 0.8rem 0; color: white; line-height: 1.2; }
+    /* Market Card Grid & Architectural Structures */
+    .market-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
+    .market-card { background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 1.5rem; overflow: hidden; display: flex; flex-direction: column; transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1); box-shadow: 0 4px 10px rgba(10, 34, 64, 0.02); }
+    .market-card:hover { border-color: #0052B4; transform: translateY(-5px); box-shadow: 0 20px 40px rgba(10, 34, 64, 0.06); }
+    
+    .card-visual { height: 180px; position: relative; overflow: hidden; background: #F1F5F9; }
+    .card-visual img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1); }
+    .market-card:hover .card-visual img { transform: scale(1.04); }
+    .card-body { padding: 1.5rem; flex-grow: 1; display: flex; flex-direction: column; }
+    .property-title { font-size: 1rem; font-weight: 800; text-transform: uppercase; margin: 0.8rem 0; color: #0A2240; line-height: 1.3; tracking-tight; }
 
-    select[name="ville"] { width: 100%; background: #0d121f !important; color: white !important; border: 1px solid var(--border); border-radius: 1rem; padding: 1.2rem; font-size: 9px; font-weight: 900; text-transform: uppercase; appearance: none; outline: none; }
+    /* Elegant Light Select Styling */
+    select[name="ville"] { width: 100%; background: #FFFFFF !important; color: #0A2240 !important; border: 1px solid #E2E8F0; border-radius: 1rem; padding: 1.2rem; font-size: 9px; font-weight: 900; text-transform: uppercase; appearance: none; outline: none; box-shadow: 0 2px 4px rgba(10, 34, 64, 0.02); transition: border-color 0.3s; }
+    select[name="ville"]:focus { border-color: #0052B4; }
 
+    /* Track bar adjustments */
     input[type='range'] { -webkit-appearance: none; width: 100%; background: transparent; }
-    input[type='range']::-webkit-slider-runnable-track { width: 100%; height: 2px; background: rgba(255, 255, 255, 0.1); border-radius: 2px; }
-    input[type='range']::-webkit-slider-thumb { -webkit-appearance: none; height: 14px; width: 14px; border-radius: 50%; background: #D4AF37; cursor: pointer; margin-top: -6px; box-shadow: 0 0 10px rgba(212, 175, 55, 0.4); }
+    input[type='range']::-webkit-slider-runnable-track { width: 100%; height: 3px; background: #E2E8F0; border-radius: 2px; }
+    input[type='range']::-webkit-slider-thumb { -webkit-appearance: none; height: 16px; width: 16px; border-radius: 50%; background: #0052B4; cursor: pointer; margin-top: -6.5px; box-shadow: 0 2px 6px rgba(0, 82, 180, 0.3); transition: transform 0.1s; }
+    input[type='range']::-webkit-slider-thumb:active { transform: scale(1.15); }
 
-    /* Video indicator badge */
-    .media-count-badge { position: absolute; bottom: 8px; right: 8px; background: rgba(0,0,0,0.7); backdrop-filter: blur(6px); border: 1px solid rgba(255,255,255,0.1); border-radius: 999px; padding: 3px 10px; display: flex; align-items: center; gap: 5px; }
-    .media-count-badge span { font-size: 8px; font-weight: 900; color: white; }
+    /* Media count glass indicator badge */
+    .media-count-badge { position: absolute; bottom: 12px; right: 12px; background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, 0.6); border-radius: 999px; padding: 4px 10px; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 8px rgba(10, 34, 64, 0.05); }
+    .media-count-badge span { font-size: 9px; font-weight: 900; color: #0A2240; }
 
     /* No-image placeholder */
-    .card-visual-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.02); }
+    .card-visual-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: #F8FAFC; }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="py-16 px-[6%]">
+<div class="py-16 px-[6%] bg-[#F8FAFC]">
     <div class="flex flex-col lg:flex-row gap-12">
         
-        <!-- SIDEBAR FILTERS -->
         <aside class="lg:w-1/4 space-y-10">
             <form method="GET" action=".">
+                
                 <div>
-                    <label class="text-[9px] font-black uppercase tracking-[0.4em] text-white/20 mb-6 block">{% trans "Recherche" %}</label>
+                    <label class="text-[9px] font-black uppercase tracking-[0.4em] text-[#475569]/60 mb-4 block">{% trans "Recherche" %}</label>
                     <div class="relative">
                         <input type="text" name="q" value="{{ request.GET.q|default:'' }}" placeholder="{% trans 'Mot-clé...' %}" 
-                               class="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-6 py-5 text-xs outline-none focus:border-[#D4AF37]">
-                        <button type="submit" class="absolute right-6 top-1/2 -translate-y-1/2 text-white/20">
+                               class="w-full bg-white border border-slate-200 rounded-2xl px-6 py-4 text-xs font-semibold text-[#0A2240] outline-none placeholder:text-slate-400 focus:border-[#0052B4] shadow-sm transition-colors">
+                        <button type="submit" class="absolute right-6 top-1/2 -translate-y-1/2 text-slate-400 hover:text-[#0052B4] transition-colors">
                             <i class="fa-solid fa-magnifying-glass"></i>
                         </button>
                     </div>
                 </div>
 
                 <div class="mt-10">
-                    <label class="text-[9px] font-black uppercase tracking-[0.4em] text-white/20 mb-6 block">{% trans "Transaction" %}</label>
-                    <div class="flex flex-col gap-2 p-1.5 bg-white/[0.02] border border-white/5 rounded-2xl">
+                    <label class="text-[9px] font-black uppercase tracking-[0.4em] text-[#475569]/60 mb-4 block">{% trans "Transaction" %}</label>
+                    <div class="flex flex-col gap-2 p-2 bg-slate-100/80 border border-slate-200/60 rounded-2xl">
                         <div class="flex gap-2">
                             <label class="flex-1">
                                 <input type="radio" name="transaction" value="ACHAT" class="hidden" onchange="this.form.submit()" {% if request.GET.transaction == 'ACHAT' %}checked{% endif %}>
-                                <div class="py-3 text-center rounded-xl text-[9px] font-black uppercase tracking-widest cursor-pointer transition-all {% if request.GET.transaction == 'ACHAT' %}bg-[#D4AF37] text-black{% else %}text-white/40 hover:bg-white/5{% endif %}">{% trans "Acheter" %}</div>
+                                <div class="py-3 text-center rounded-xl text-[9px] font-black uppercase tracking-widest cursor-pointer transition-all {% if request.GET.transaction == 'ACHAT' %}bg-[#0A2240] text-white shadow-sm{% else %}text-slate-600 hover:bg-white/60{% endif %}">{% trans "Acheter" %}</div>
                             </label>
                             <label class="flex-1">
                                 <input type="radio" name="transaction" value="VENTE" class="hidden" onchange="this.form.submit()" {% if request.GET.transaction == 'VENTE' %}checked{% endif %}>
-                                <div class="py-3 text-center rounded-xl text-[9px] font-black uppercase tracking-widest cursor-pointer transition-all {% if request.GET.transaction == 'VENTE' %}bg-[#D4AF37] text-black{% else %}text-white/40 hover:bg-white/5{% endif %}">{% trans "Vendre" %}</div>
+                                <div class="py-3 text-center rounded-xl text-[9px] font-black uppercase tracking-widest cursor-pointer transition-all {% if request.GET.transaction == 'VENTE' %}bg-[#0A2240] text-white shadow-sm{% else %}text-slate-600 hover:bg-white/60{% endif %}">{% trans "Vendre" %}</div>
                             </label>
                         </div>
                         <label class="w-full">
                             <input type="radio" name="transaction" value="LOCATION" class="hidden" onchange="this.form.submit()" {% if request.GET.transaction == 'LOCATION' %}checked{% endif %}>
-                            <div class="py-3 text-center rounded-xl text-[9px] font-black uppercase tracking-widest cursor-pointer transition-all {% if request.GET.transaction == 'LOCATION' %}bg-[#D4AF37] text-black{% else %}text-white/40 hover:bg-white/5{% endif %}">{% trans "Louer" %}</div>
+                            <div class="py-3 text-center rounded-xl text-[9px] font-black uppercase tracking-widest cursor-pointer transition-all {% if request.GET.transaction == 'LOCATION' %}bg-[#0A2240] text-white shadow-sm{% else %}text-slate-600 hover:bg-white/60{% endif %}">{% trans "Louer" %}</div>
                         </label>
                     </div>
                 </div>
 
                 <div class="mt-10">
-                    <div class="flex justify-between items-center mb-6">
-                        <label class="text-[9px] font-black uppercase tracking-[0.4em] text-white/20 block">{% trans "Prix Max (DH)" %}</label>
-                        <span id="priceValue" class="text-[10px] font-black text-[#D4AF37]">{{ request.GET.max_price|default:"10M+" }}</span>
+                    <div class="flex justify-between items-center mb-4">
+                        <label class="text-[9px] font-black uppercase tracking-[0.4em] text-[#475569]/60 block">{% trans "Prix Max (DH)" %}</label>
+                        <span id="priceValue" class="text-[11px] font-black text-[#0052B4] bg-[#0052B4]/5 px-2.5 py-1 rounded-md">{{ request.GET.max_price|default:"10M+" }}</span>
                     </div>
                     <input type="range" name="max_price" min="10000" max="10000000" step="50000" 
                            value="{{ request.GET.max_price|default:'10000000' }}" 
@@ -96,7 +107,7 @@
                 </div>
 
                 <div class="mt-10">
-                    <label class="text-[9px] font-black uppercase tracking-[0.4em] text-white/20 mb-6 block">{% trans "Expertise" %}</label>
+                    <label class="text-[9px] font-black uppercase tracking-[0.4em] text-[#475569]/60 mb-4 block">{% trans "Expertise" %}</label>
                     <div class="grid grid-cols-2 gap-3">
                         <a href="?type=VILLA{% if request.GET.transaction %}&transaction={{ request.GET.transaction }}{% endif %}{% if request.GET.ville %}&ville={{ request.GET.ville }}{% endif %}" 
                            class="filter-tile {% if request.GET.type == 'VILLA' %}active{% endif %}">
@@ -117,8 +128,8 @@
                     </div>
                 </div>
 
-                <div class="pt-10 mt-10 border-t border-white/5">
-                    <label class="text-[9px] font-black uppercase tracking-[0.4em] text-white/20 mb-6 block">{% trans "Localité" %}</label>
+                <div class="pt-10 mt-10 border-t border-slate-200">
+                    <label class="text-[9px] font-black uppercase tracking-[0.4em] text-[#475569]/60 mb-4 block">{% trans "Localité" %}</label>
                     <div class="relative">
                         <select name="ville" onchange="this.form.submit()">
                             <option value="">{% trans "Toutes les villes" %}</option>
@@ -126,49 +137,48 @@
                             <option value="Rabat" {% if request.GET.ville == "Rabat" %}selected{% endif %}>Rabat</option>
                             <option value="Casablanca" {% if request.GET.ville == "Casablanca" %}selected{% endif %}>Casablanca</option>
                         </select>
-                        <i class="fa-solid fa-chevron-down absolute right-5 top-1/2 -translate-y-1/2 text-[9px] text-white/20 pointer-events-none"></i>
+                        <i class="fa-solid fa-chevron-down absolute right-5 top-1/2 -translate-y-1/2 text-[9px] text-slate-400 pointer-events-none"></i>
                     </div>
                 </div>
 
                 {% if request.GET.urlencode %}
                 <div class="pt-6">
-                    <a href="?" class="text-[8px] font-black uppercase text-[#D4AF37] opacity-40 hover:opacity-100 transition-all tracking-[0.2em]">✕ Effacer les filtres</a>
+                    <a href="?" class="inline-block text-[8px] font-black uppercase text-[#0052B4] bg-[#0052B4]/5 px-4 py-2 rounded-full tracking-[0.15em] hover:bg-[#0052B4] hover:text-white transition-all">✕ {% trans "Effacer les filtres" %}</a>
                 </div>
                 {% endif %}
             </form>
         </aside>
 
-        <!-- MAIN GRID -->
         <main class="lg:w-3/4">
             <div class="market-grid">
                 {% for annonce in annonces %}
                 <article class="market-card">
                     
-                    <!-- Card Visual: uses first non-video media -->
                     <div class="card-visual">
-                        {% with annonce.media.all as media_list %}
-                            {% for m in media_list %}
-                                {% if not m.is_video and forloop.first %}
-                                    <img src="{{ m.file.url }}" alt="{{ annonce.titre }}">
-                                {% endif %}
-                            {% endfor %}
+                        {% with media_list=annonce.media.all %}
+                            <div class="w-full h-full relative">
+                                {% for m in media_list %}
+                                    {% if not m.is_video %}
+                                        <img src="{{ m.file.url }}" alt="{{ annonce.titre }}" class="w-full h-full object-cover absolute inset-0 z-0">
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+
                             {% if not media_list %}
                                 <div class="card-visual-placeholder">
-                                    <i class="fa-solid fa-city text-4xl text-white/5"></i>
+                                    <i class="fa-solid fa-city text-4xl text-slate-200"></i>
                                 </div>
                             {% endif %}
                         {% endwith %}
 
-                        <!-- Type badge -->
-                        <div class="absolute top-4 left-4 bg-black/60 backdrop-blur-md px-4 py-1.5 rounded-full border border-white/10">
-                            <span class="text-[7px] font-black uppercase text-[#D4AF37] tracking-widest">{{ annonce.get_type_bien_display }}</span>
+                        <div class="absolute top-4 left-4 bg-white/80 backdrop-blur-md px-4 py-1.5 rounded-full border border-white/60 shadow-sm z-10">
+                            <span class="text-[8px] font-black uppercase text-[#0052B4] tracking-widest">{{ annonce.get_type_bien_display }}</span>
                         </div>
 
-                        <!-- Media count badge -->
                         {% with annonce.media.count as total %}
                         {% if total > 1 %}
-                        <div class="media-count-badge">
-                            <i class="fa-solid fa-images" style="font-size:8px; color:#D4AF37;"></i>
+                        <div class="media-count-badge z-10">
+                            <i class="fa-solid fa-images" style="font-size: 9px; color: #0052B4;"></i>
                             <span>{{ total }}</span>
                         </div>
                         {% endif %}
@@ -176,19 +186,19 @@
                     </div>
 
                     <div class="card-body">
-                        <div class="flex items-center gap-2 text-[8px] font-bold text-white/30 uppercase">
-                            <i class="fa-solid fa-location-dot text-[#D4AF37]"></i> {{ annonce.ville|default:"Maroc" }}
+                        <div class="flex items-center gap-2 text-[9px] font-bold text-slate-400 uppercase tracking-wide">
+                            <i class="fa-solid fa-location-dot text-[#F28E2B]"></i> {{ annonce.ville|default:"Maroc" }}
                         </div>
                         <h3 class="property-title">{{ annonce.titre }}</h3>
                         
-                        <div class="mt-auto pt-4 border-t border-white/5 flex justify-between items-center">
+                        <div class="mt-auto pt-4 border-t border-slate-100 flex justify-between items-center">
                             <div>
-                                <span class="text-[7px] font-black text-white/20 uppercase block mb-1">{{ annonce.get_type_transaction_display }}</span>
-                                <span class="text-xl font-black">{{ annonce.prix }} <span class="text-[9px] text-[#D4AF37]">DH</span></span>
+                                <span class="text-[8px] font-bold text-slate-400 uppercase block mb-0.5">{{ annonce.get_type_transaction_display }}</span>
+                                <span class="text-xl font-black text-[#0A2240]">{{ annonce.prix }} <span class="text-[10px] font-bold text-[#0052B4]">DH</span></span>
                             </div>
                             <div class="flex gap-2">
                                 <a href="{% url 'annonce_detail' annonce.pk %}" 
-                                   class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-[#D4AF37] hover:text-black transition-all">
+                                   class="w-10 h-10 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-[#0A2240] hover:bg-[#0052B4] hover:text-white hover:border-[#0052B4] transition-all duration-300 shadow-sm">
                                     <i class="fa-solid fa-plus text-xs"></i>
                                 </a>
                             </div>
@@ -196,9 +206,9 @@
                     </div>
                 </article>
                 {% empty %}
-                <div class="col-span-full py-40 text-center border border-dashed border-white/10 rounded-[2rem]">
-                    <i class="fa-solid fa-building-circle-xmark text-white/10 text-4xl mb-6"></i>
-                    <p class="uppercase tracking-[0.4em] text-white/20 font-black text-[10px]">Aucune annonce disponible</p>
+                <div class="col-span-full py-40 text-center bg-white border border-dashed border-slate-200 rounded-[2rem] shadow-sm">
+                    <i class="fa-solid fa-building-circle-xmark text-slate-200 text-5xl mb-4"></i>
+                    <p class="uppercase tracking-[0.3em] text-slate-400 font-bold text-[10px]">{% trans "Aucune annonce disponible" %}</p>
                 </div>
                 {% endfor %}
             </div>

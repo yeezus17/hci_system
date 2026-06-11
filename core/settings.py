@@ -1,15 +1,19 @@
 import os, dj_database_url
 from pathlib import Path
 import cloudinary
+from dotenv import load_dotenv  
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+load_dotenv(os.path.join(BASE_DIR, '.env'))
+
 SECRET_KEY = os.environ.get('SECRET_KEY')
-DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost').split(',')
-
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 INSTALLED_APPS = [
+    'cloudinary_storage',
+    'cloudinary',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -22,16 +26,17 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
-    'cloudinary_storage',
-    'cloudinary',
+    
 ]
 
-# Cloudinary config
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': os.environ.get('dw79oqzqb'),
-    'API_KEY': os.environ.get('698599377894747'),
-    'API_SECRET': os.environ.get('**********'),
+    'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME', 'dw79oqzqb'),
+    'API_KEY': os.environ.get('CLOUDINARY_API_KEY', '698599377894747'),
+    'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET', '**********'),
 }
+
+# Cloudinary config
+
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 

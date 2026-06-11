@@ -9,18 +9,18 @@
     /* Smooth Scrolling */
     html { scroll-behavior: smooth; }
 
-    /* Hero & General Styles */
+    /* Bright, Clear Architectural Hero Visual */
     .hero-visual { 
-        height: 75vh; 
+        height: 85vh; 
         display: flex; 
         align-items: center; 
         justify-content: center; 
-        background: linear-gradient(rgba(6, 11, 26, 0.4), rgba(6, 11, 26, 0.9)), 
-                    url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80&w=1400'); 
-        background-attachment: fixed; 
+        background: linear-gradient(rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.05)), 
+                    url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80&w=2000'); 
         background-size: cover; 
-        background-position: center; 
+        background-position: center 30%; 
         margin-top: -90px;
+        position: relative;
     }
     
     .pillar-card { 
@@ -32,29 +32,17 @@
         flex-direction: column;
         height: 100%;
     }
-    .pillar-card:hover { transform: translateY(-10px); box-shadow: 0 30px 60px rgba(0,0,0,0.3); }
+    .pillar-card:hover { transform: translateY(-10px); box-shadow: 0 30px 60px rgba(10, 34, 64, 0.15); }
     
+    /* Clean, Multi-Layered Frosted Glass Container */
     .cta-glass { 
-        background: rgba(255, 255, 255, 0.03); 
-        border: 1px solid rgba(255, 255, 255, 0.08); 
-        backdrop-filter: blur(15px); 
+        background: rgba(255, 255, 255, 0.65); 
+        border: 1px solid rgba(255, 255, 255, 0.5); 
+        backdrop-filter: blur(30px); 
+        -webkit-backdrop-filter: blur(30px);
         position: relative;
         overflow: hidden;
     }
-
-    .cta-glass::before {
-        content: "";
-        position: absolute;
-        top: -50%; left: -50%;
-        width: 200%; height: 200%;
-        background: radial-gradient(circle, rgba(212, 175, 55, 0.05) 0%, transparent 70%);
-        animation: rotate-slow 15s linear infinite;
-        z-index: -1;
-    }
-
-    @keyframes rotate-slow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-    .pulse-gold { animation: pulse-blur 8s ease-in-out infinite alternate; }
-    @keyframes pulse-blur { 0% { transform: scale(1); opacity: 0.5; } 100% { transform: scale(1.5); opacity: 0.8; } }
 
     /* Scroll Reveal */
     .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s ease-out; }
@@ -64,7 +52,7 @@
     #mobile-menu {
         position: fixed;
         inset: 0;
-        background: rgba(6, 11, 26, 0.98);
+        background: rgba(10, 34, 64, 0.98);
         backdrop-filter: blur(20px);
         z-index: 1000;
         display: none;
@@ -85,88 +73,101 @@
         margin: 1rem 0;
         transition: color 0.3s ease;
     }
-    .menu-link:hover { color: #d4af37; }
+    .menu-link:hover { color: #0052B4; }
 
     .service-item { transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1); }
     .service-item:hover {
-        border-color: #d4af37 !important;
+        border-color: #0052B4 !important;
         transform: translateY(-8px);
-        box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        box-shadow: 0 20px 40px rgba(10, 34, 64, 0.1);
     }
-    .service-item:hover span { color: #d4af37 !important; }
+    .service-item:hover span { color: #0052B4 !important; }
 </style>
 {% endblock %}
 
 {% block content %}
     <div id="mobile-menu">
-        <button onclick="toggleMenu()" class="absolute top-10 right-10 text-white/50 hover:text-gold transition-colors">
+        <button onclick="toggleMenu()" class="absolute top-10 right-10 text-white/50 hover:text-white transition-colors">
             <i class="fa-solid fa-xmark text-4xl"></i>
         </button>
         <nav class="flex flex-col items-center">
-            <a href="#{% url 'annonces_list' %}" onclick="toggleMenu()" class="menu-link">{% trans "Marketplace" %}</a>
-            <a href="#construction" onclick="toggleMenu()" class="menu-link text-gold">{% trans "Construction" %}</a>
+            <a href="{% url 'annonces_list' %}" onclick="toggleMenu()" class="menu-link">{% trans "Marketplace" %}</a>
+            <a href="#construction" onclick="toggleMenu()" class="menu-link text-[#0052B4]">{% trans "Construction" %}</a>
             <a href="#expert" onclick="toggleMenu()" class="menu-link">{% trans "Ingénierie" %}</a>
-            <a href="{% url 'annonces_list' %}" onclick="toggleMenu()" class="menu-link text-white/30 text-xl mt-8">{% trans "Catalogue Immobilière" %}</a>
+            <a href="{% url 'annonces_list' %}" onclick="toggleMenu()" class="menu-link text-white/30 text-xl mt-8">{% trans "Catalogue Immobilier" %}</a>
         </nav>
     </div>
 
     <header class="hero-visual">
-        <div class="text-center px-6">
-            <h1 class="text-6xl md:text-[8rem] font-black uppercase tracking-tighter leading-none mb-4">
-                {% trans "L'Élite" %} <span class="text-gold {% if LANGUAGE_CODE == 'ar' %}font-black{% else %}font-light{% endif %}">{% trans "Bâtit" %}</span>
+        <div class="text-center px-6 mt-12 max-w-6xl mx-auto flex flex-col items-center">
+            <h1 class="text-6xl md:text-[7.5rem] font-black uppercase tracking-tight leading-none m-0 text-[#0052B4]"
+                style="font-family: 'Outfit', sans-serif; text-shadow: 0 2px 12px rgba(255, 255, 255, 0.85);">
+                {% trans "L'Élite Bâtit" %}
             </h1>
-            <p class="text-white/40 text-xs md:text-sm uppercase tracking-[1em] font-light ml-4">
-                {% trans "Ingénierie • Promotion • Excellence" %}
-            </p>
+            
+            <div class="mt-6 inline-block bg-[#E2E8F0]/90 border border-slate-300 rounded-full px-8 py-2.5 shadow-sm backdrop-blur-sm">
+                <p class="text-[10px] md:text-xs font-bold tracking-[0.5em] text-[#475569] uppercase m-0 flex items-center justify-center gap-2 md:gap-4">
+                    <span>{% trans "Ingénierie" %}</span>
+                    <span class="text-slate-400 font-normal">•</span>
+                    <span>{% trans "Promotion" %}</span>
+                    <span class="text-slate-400 font-normal">•</span>
+                    <span>{% trans "Excellence" %}</span>
+                </p>
+            </div>
         </div>
-        <button onclick="toggleMenu()" class="md:hidden absolute top-10 right-10 text-white">
+        <button onclick="toggleMenu()" class="md:hidden absolute top-24 right-10 text-[#0A2240]">
             <i class="fa-solid fa-bars-staggered text-2xl"></i>
         </button>
     </header>
 
-    <section class="max-w-7xl mx-auto px-6 -mt-32 relative z-50 mb-24 reveal">
-        <div class="cta-glass rounded-[4rem] p-12 md:p-20 shadow-[0_50px_100px_rgba(0,0,0,0.5)]">
-            <div class="absolute -top-24 -right-24 w-80 h-80 bg-gold/10 rounded-full blur-3xl pulse-gold"></div>
-            
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center relative z-10">
-                <div>
-                    <h2 class="text-4xl md:text-6xl font-black uppercase tracking-tighter leading-[0.9] mb-8">
-                        {% trans "Rejoignez le" %} <br><span class="text-gold">{% trans "Réseau HCI" %}</span>
+    <section class="max-w-7xl w-[92%] mx-auto px-0 -mt-28 relative z-50 mb-24 reveal">
+        <div class="cta-glass rounded-[2.5rem] p-8 md:p-12 shadow-[0_30px_70px_rgba(10,34,64,0.06)]">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10">
+                
+                <div class="lg:col-span-5 space-y-4">
+                    <h2 class="text-3xl md:text-4xl font-black uppercase tracking-tight text-[#0A2240] leading-tight">
+                        {% trans "Rejoignez le" %} <br><span class="text-[#0A2240]">{% trans "Réseau HCI" %}</span>
                     </h2>
-                    <ul class="space-y-6">
-                        <li class="flex items-start gap-4">
-                            <div class="w-6 h-6 rounded-full bg-gold/20 flex items-center justify-center mt-1"><i class="fa-solid fa-check text-[10px] text-gold"></i></div>
-                            <p class="text-white/60 text-sm font-medium">{% trans "Accès direct aux experts sans commissions." %}</p>
-                        </li>
-                        <li class="flex items-start gap-4">
-                            <div class="w-6 h-6 rounded-full bg-gold/20 flex items-center justify-center mt-1"><i class="fa-solid fa-check text-[10px] text-gold"></i></div>
-                            <p class="text-white/60 text-sm font-medium">{% trans "Gérez votre dashboard et publiez vos services." %}</p>
-                        </li>
-                    </ul>
+                    <div class="flex items-start gap-3 pt-1">
+                        <div class="w-5 h-5 rounded-full flex items-center justify-center mt-0.5"><i class="fa-solid fa-check text-xs text-[#0A2240]"></i></div>
+                        <p class="text-slate-600 text-sm font-semibold m-0">{% trans "Accès direct aux experts sans commissions." %}</p>
+                    </div>
                 </div>
                 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-5">
                     {% if not user.is_authenticated %}
-                    <a href="{% url 'signup' %}" class="group bg-gold p-8 rounded-[2.5rem] flex flex-col justify-between hover:bg-[#d4af37] transition-all min-h-[250px] border border-gold">
-                        <i class="fa-solid fa-user-plus text-navy text-3xl"></i>
-                        <div><p class="text-navy font-black uppercase tracking-tighter text-2xl">{% trans "S'inscrire" %}</p></div>
+                    
+                    <a href="{% url 'signup' %}" class="group bg-white/70 hover:bg-white/95 border border-white/80 hover:border-[#0A2240]/10 p-6 rounded-3xl flex flex-col justify-between transition-all duration-300 shadow-sm hover:-translate-y-1 min-h-[200px]">
+                        <div class="w-12 h-12 bg-[#0A2240]/5 rounded-xl flex items-center justify-center group-hover:bg-[#0A2240] transition-colors">
+                            <i class="fa-solid fa-user-plus text-[#0A2240] group-hover:text-white text-lg transition-colors"></i>
+                        </div>
+                        <div>
+                            <p class="text-[#0A2240] font-bold uppercase tracking-wide text-lg mb-1">{% trans "S'inscrire" %}</p>
+                            <p class="text-xs text-slate-500 font-medium m-0">{% trans "Accès direct aux experts sans commissions." %}</p>
+                        </div>
                     </a>
-                    <a href="{% url 'login' %}" class="group bg-white/5 border border-white/10 p-8 rounded-[2.5rem] flex flex-col justify-between hover:bg-gold transition-all min-h-[250px]">
-                        <i class="fa-solid fa-right-to-bracket text-gold group-hover:text-navy text-3xl transition-colors"></i>
-                        <div><p class="text-white group-hover:text-navy font-black uppercase tracking-tighter text-2xl transition-colors">{% trans "Connexion" %}</p></div>
+                    
+                    <a href="{% url 'login' %}" class="group bg-white/70 hover:bg-white/95 border border-white/80 hover:border-[#0A2240]/10 p-6 rounded-3xl flex flex-col justify-between transition-all duration-300 shadow-sm hover:-translate-y-1 min-h-[200px]">
+                        <div class="w-12 h-12 bg-[#0A2240]/5 rounded-xl flex items-center justify-center group-hover:bg-[#F28E2B] transition-colors">
+                            <i class="fa-solid fa-right-to-bracket text-[#0A2240] group-hover:text-white text-lg transition-colors"></i>
+                        </div>
+                        <div>
+                            <p class="text-[#0A2240] font-bold uppercase tracking-wide text-lg mb-1">{% trans "Connexion" %}</p>
+                            <p class="text-xs text-slate-500 font-medium m-0">{% trans "Accès direct aux experts sans commissions." %}</p>
+                        </div>
                     </a>
+                    
                     {% else %}
-<div class="col-span-2 bg-white/5 border border-white/10 p-12 rounded-[3rem] text-center">
-    <p class="text-gold font-black uppercase tracking-widest text-xs mb-6">
-        {% trans "Bienvenue" %}, {{ user.username }}
-    </p>
-    
-    <a href="{% url 'user_profile' %}" 
-   class="inline-block bg-gold text-navy font-black px-10 py-5 rounded-2xl uppercase text-[11px] tracking-widest transition-all duration-300 shadow-[0_10px_30px_rgba(212,175,55,0.3)] hover:bg-white hover:text-[#060b1a] hover:scale-105">
-    {% trans "Accéder au Dashboard" %}
-</a>
-</div>
-{% endif %}
+                    <div class="col-span-2 bg-white/70 border border-white/80 p-8 rounded-3xl text-center backdrop-blur-sm">
+                        <p class="text-[#0A2240] font-bold uppercase tracking-widest text-xs mb-4">
+                            {% trans "Bienvenue" %}, {{ user.username }}
+                        </p>
+                        <a href="{% url 'user_profile' %}" 
+                           class="inline-block bg-[#0A2240] text-white font-bold px-8 py-4 rounded-xl uppercase text-[11px] tracking-widest transition-all duration-300 shadow-md hover:bg-[#F28E2B] hover:scale-105">
+                            {% trans "Accéder au Dashboard" %}
+                        </a>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -174,62 +175,62 @@
 
     <section class="max-w-7xl mx-auto px-6 py-12 relative z-40 reveal">
         <div class="mb-20">
-            <p class="text-gold text-[10px] font-black uppercase tracking-[0.5em] mb-4 text-center">{% trans "Expertise" %}</p>
-            <h2 class="text-4xl md:text-5xl font-black uppercase tracking-tighter text-center mb-12">{% trans "Trouver votre" %} <span class="text-white/30">{% trans "Prestataire" %}</span></h2>
+            <p class="text-[#475569] text-[10px] font-black uppercase tracking-[0.5em] mb-4 text-center">{% trans "Expertise" %}</p>
+            <h2 class="text-4xl md:text-5xl font-black uppercase tracking-tighter text-center mb-12 text-[#0A2240]">{% trans "Trouver votre" %} <span class="text-slate-300">{% trans "Prestataire" %}</span></h2>
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-                <a href="#" class="service-item group flex flex-col items-center p-8 rounded-[2.5rem] bg-white/5 border border-white/10">
-                    <div class="mb-5"><i class="fa-solid fa-helmet-safety text-gold text-2xl"></i></div>
-                    <span class="text-[9px] font-black uppercase tracking-widest text-white/60 text-center">{% trans "Gros Œuvres" %}</span>
+                <a href="#" class="service-item group flex flex-col items-center p-8 rounded-3xl bg-white border border-slate-100 shadow-sm">
+                    <div class="mb-5"><i class="fa-solid fa-helmet-safety text-[#0A2240] text-2xl"></i></div>
+                    <span class="text-[9px] font-black uppercase tracking-widest text-slate-600 text-center">{% trans "Gros Œuvres" %}</span>
                 </a>
-                <a href="#" class="service-item group flex flex-col items-center p-8 rounded-[2.5rem] bg-gold border border-gold">
-                    <div class="mb-5"><i class="fa-solid fa-compass-drafting text-navy text-2xl"></i></div>
-                    <span class="text-[9px] font-black uppercase tracking-widest text-navy text-center">{% trans "Architecte" %}</span>
+                <a href="#" class="service-item group flex flex-col items-center p-8 rounded-3xl bg-[#0052B4] border border-[#0052B4] shadow-sm">
+                    <div class="mb-5"><i class="fa-solid fa-compass-drafting text-white text-2xl"></i></div>
+                    <span class="text-[9px] font-black uppercase tracking-widest text-white text-center">{% trans "Architecte" %}</span>
                 </a>
-                <a href="#" class="service-item group flex flex-col items-center p-8 rounded-[2.5rem] bg-white/5 border border-white/10">
-                    <div class="mb-5"><i class="fa-solid fa-bolt text-gold text-2xl"></i></div>
-                    <span class="text-[9px] font-black uppercase tracking-widest text-white/60 text-center">{% trans "Électricité" %}</span>
+                <a href="#" class="service-item group flex flex-col items-center p-8 rounded-3xl bg-white border border-slate-100 shadow-sm">
+                    <div class="mb-5"><i class="fa-solid fa-bolt text-[#0A2240] text-2xl"></i></div>
+                    <span class="text-[9px] font-black uppercase tracking-widest text-slate-600 text-center">{% trans "Électricité" %}</span>
                 </a>
-                <a href="#" class="service-item group flex flex-col items-center p-8 rounded-[2.5rem] bg-white/5 border border-white/10">
-                    <div class="mb-5"><i class="fa-solid fa-couch text-gold text-2xl"></i></div>
-                    <span class="text-[9px] font-black uppercase tracking-widest text-white/60 text-center">{% trans "Intérieur" %}</span>
+                <a href="#" class="service-item group flex flex-col items-center p-8 rounded-3xl bg-white border border-slate-100 shadow-sm">
+                    <div class="mb-5"><i class="fa-solid fa-couch text-[#0A2240] text-2xl"></i></div>
+                    <span class="text-[9px] font-black uppercase tracking-widest text-slate-600 text-center">{% trans "Intérieur" %}</span>
                 </a>
-                <a href="#" class="service-item group flex flex-col items-center p-8 rounded-[2.5rem] bg-white/5 border border-white/10">
-                    <div class="mb-5"><i class="fa-solid fa-window-maximize text-gold text-2xl"></i></div>
-                    <span class="text-[9px] font-black uppercase tracking-widest text-white/60 text-center">{% trans "Aluminium" %}</span>
+                <a href="#" class="service-item group flex flex-col items-center p-8 rounded-3xl bg-white border border-slate-100 shadow-sm">
+                    <div class="mb-5"><i class="fa-solid fa-window-maximize text-[#0A2240] text-2xl"></i></div>
+                    <span class="text-[9px] font-black uppercase tracking-widest text-slate-600 text-center">{% trans "Aluminium" %}</span>
                 </a>
-                <a href="{% url 'services_list' %}" class="service-item group flex flex-col items-center p-8 rounded-[2.5rem] bg-navy border border-white/10">
-                    <div class="mb-5"><i class="fa-solid fa-plus text-gold text-2xl"></i></div>
-                    <span class="text-[9px] font-black uppercase tracking-widest text-gold text-center">{% trans "Tout voir" %}</span>
+                <a href="{% url 'services_list' %}" class="service-item group flex flex-col items-center p-8 rounded-3xl bg-[#0A2240] border border-[#0A2240] shadow-sm">
+                    <div class="mb-5"><i class="fa-solid fa-plus text-[#F28E2B] text-2xl"></i></div>
+                    <span class="text-[9px] font-black uppercase tracking-widest text-[#F28E2B] text-center">{% trans "Tout voir" %}</span>
                 </a>
             </div>
         </div>
 
         <div class="mt-20">
-            <h2 class="text-4xl md:text-5xl font-black uppercase tracking-tighter text-center mb-12">{% trans "Trouver votre" %} <span class="text-white/30">{% trans "Matière" %}</span></h2>
+            <h2 class="text-4xl md:text-5xl font-black uppercase tracking-tighter text-center mb-12 text-[#0A2240]">{% trans "Trouver votre" %} <span class="text-slate-300">{% trans "Matière" %}</span></h2>
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-                <a href="#" class="service-item group flex flex-col items-center p-8 rounded-[2.5rem] bg-white/5 border border-white/10">
-                    <div class="mb-5"><i class="fa-solid fa-trowel-bricks text-gold text-2xl"></i></div>
-                    <span class="text-[9px] font-black uppercase tracking-widest text-white/60 text-center">{% trans "Matériaux" %}</span>
+                <a href="#" class="service-item group flex flex-col items-center p-8 rounded-3xl bg-white border border-slate-100 shadow-sm">
+                    <div class="mb-5"><i class="fa-solid fa-trowel-bricks text-[#0A2240] text-2xl"></i></div>
+                    <span class="text-[9px] font-black uppercase tracking-widest text-slate-600 text-center">{% trans "Matériaux" %}</span>
                 </a>
-                <a href="#" class="service-item group flex flex-col items-center p-8 rounded-[2.5rem] bg-white/5 border border-white/10">
-                    <div class="mb-5"><i class="fa-solid fa-faucet text-gold text-2xl"></i></div>
-                    <span class="text-[9px] font-black uppercase tracking-widest text-white/60 text-center">{% trans "Sanitaire" %}</span>
+                <a href="#" class="service-item group flex flex-col items-center p-8 rounded-3xl bg-white border border-slate-100 shadow-sm">
+                    <div class="mb-5"><i class="fa-solid fa-faucet text-[#0A2240] text-2xl"></i></div>
+                    <span class="text-[9px] font-black uppercase tracking-widest text-slate-600 text-center">{% trans "Sanitaire" %}</span>
                 </a>
-                <a href="#" class="service-item group flex flex-col items-center p-8 rounded-[2.5rem] bg-white/5 border border-white/10">
-                    <div class="mb-5"><i class="fa-solid fa-paint-roller text-gold text-2xl"></i></div>
-                    <span class="text-[9px] font-black uppercase tracking-widest text-white/60 text-center">{% trans "Peinture" %}</span>
+                <a href="#" class="service-item group flex flex-col items-center p-8 rounded-3xl bg-white border border-slate-100 shadow-sm">
+                    <div class="mb-5"><i class="fa-solid fa-paint-roller text-[#0A2240] text-2xl"></i></div>
+                    <span class="text-[9px] font-black uppercase tracking-widest text-slate-600 text-center">{% trans "Peinture" %}</span>
                 </a>
-                <a href="#" class="service-item group flex flex-col items-center p-8 rounded-[2.5rem] bg-white/5 border border-white/10">
-                    <div class="mb-5"><i class="fa-solid fa-swimming-pool text-gold text-2xl"></i></div>
-                    <span class="text-[9px] font-black uppercase tracking-widest text-white/60 text-center">{% trans "Piscine" %}</span>
+                <a href="#" class="service-item group flex flex-col items-center p-8 rounded-3xl bg-white border border-slate-100 shadow-sm">
+                    <div class="mb-5"><i class="fa-solid fa-swimming-pool text-[#0A2240] text-2xl"></i></div>
+                    <span class="text-[9px] font-black uppercase tracking-widest text-slate-600 text-center">{% trans "Piscine" %}</span>
                 </a>
-                <a href="#" class="service-item group flex flex-col items-center p-8 rounded-[2.5rem] bg-white/5 border border-white/10">
-                    <div class="mb-5"><i class="fa-solid fa-layer-group text-gold text-2xl"></i></div>
-                    <span class="text-[9px] font-black uppercase tracking-widest text-white/60 text-center">{% trans "Revêtement" %}</span>
+                <a href="#" class="service-item group flex flex-col items-center p-8 rounded-3xl bg-white border border-slate-100 shadow-sm">
+                    <div class="mb-5"><i class="fa-solid fa-layer-group text-[#0A2240] text-2xl"></i></div>
+                    <span class="text-[9px] font-black uppercase tracking-widest text-slate-600 text-center">{% trans "Revêtement" %}</span>
                 </a>
-                <a href="{% url 'services_list' %}" class="service-item group flex flex-col items-center p-8 rounded-[2.5rem] bg-navy border border-white/10">
-                    <div class="mb-5"><i class="fa-solid fa-magnifying-glass text-gold text-2xl"></i></div>
-                    <span class="text-[9px] font-black uppercase tracking-widest text-gold text-center">{% trans "Explorer" %}</span>
+                <a href="{% url 'services_list' %}" class="service-item group flex flex-col items-center p-8 rounded-3xl bg-[#0A2240] border border-[#0A2240] shadow-sm">
+                    <div class="mb-5"><i class="fa-solid fa-magnifying-glass text-[#F28E2B] text-2xl"></i></div>
+                    <span class="text-[9px] font-black uppercase tracking-widest text-[#F28E2B] text-center">{% trans "Explorer" %}</span>
                 </a>
             </div>
         </div>
@@ -238,53 +239,53 @@
     <section id="promotion" class="max-w-7xl mx-auto px-6 py-24 reveal">
         <div class="flex flex-col md:flex-row items-end justify-between mb-16 gap-4">
             <div>
-                <p class="text-gold text-[10px] font-black uppercase tracking-[0.5em] mb-4">{% trans "Marketplace" %}</p>
-                <h2 class="text-5xl font-black uppercase tracking-tighter">{% trans "Opportunités" %} <span class="text-white/20">{% trans "Immobilier" %}</span></h2>
+                <p class="text-[#475569] text-[10px] font-black uppercase tracking-[0.5em] mb-4">{% trans "Marketplace" %}</p>
+                <h2 class="text-5xl font-black uppercase tracking-tighter text-[#0A2240]">{% trans "Opportunités" %} <span class="text-slate-300">{% trans "Immobilier" %}</span></h2>
             </div>
-            <a href="{% url 'annonces_list' %}" class="text-white/40 font-bold text-[10px] uppercase tracking-[0.3em] hover:text-gold transition-all">{% trans "Catalogue Complet →" %}</a>
+            <a href="{% url 'annonces_list' %}" class="text-slate-400 font-bold text-[10px] uppercase tracking-[0.3em] hover:text-[#0052B4] transition-all">{% trans "Catalogue Complet →" %}</a>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {% for annonce in annonces %}
-            <a href="{% url 'annonce_detail' annonce.pk %}" class="pillar-card rounded-[3rem] overflow-hidden group">
-                <div class="h-[220px] bg-slate-200">
+            <a href="{% url 'annonce_detail' annonce.pk %}" class="pillar-card rounded-3xl overflow-hidden group bg-white border border-slate-100 shadow-sm">
+                <div class="h-[220px] bg-slate-100">
                     {% if annonce.image %}<img src="{{ annonce.image.url }}" class="w-full h-full object-cover">{% endif %}
                 </div>
                 <div class="p-8 flex-grow flex flex-col justify-between">
                     <div>
-                        <h3 class="text-black text-xl font-black mb-2 uppercase tracking-tighter">{{ annonce.titre }}</h3>
-                        <p class="text-slate-700 text-[10px] font-bold uppercase tracking-widest mb-6"><i class="fa-solid fa-location-dot text-gold"></i> {{ annonce.ville|default:"Maroc" }}</p>
+                        <h3 class="text-[#0A2240] text-xl font-black mb-2 uppercase tracking-tighter">{{ annonce.titre }}</h3>
+                        <p class="text-slate-500 text-[10px] font-bold uppercase tracking-widest mb-6"><i class="fa-solid fa-location-dot text-[#F28E2B]"></i> {{ annonce.ville|default:"Maroc" }}</p>
                     </div>
-                    <div class="flex items-center justify-between pt-6 border-t">
-                        <span class="text-black font-black text-xl">{{ annonce.prix }} <small class="text-slate-500 text-[9px]">{% trans "DH" %}</small></span>
-                        <div class="w-10 h-10 rounded-xl bg-navy text-gold flex items-center justify-center group-hover:bg-gold group-hover:text-navy transition-all"><i class="fa-solid fa-plus text-xs"></i></div>
+                    <div class="flex items-center justify-between pt-6 border-t border-slate-100">
+                        <span class="text-[#0A2240] font-black text-xl">{{ annonce.prix }} <small class="text-slate-400 text-[9px]">{% trans "DH" %}</small></span>
+                        <div class="w-10 h-10 rounded-xl bg-[#0A2240] text-white flex items-center justify-center group-hover:bg-[#F28E2B] transition-all"><i class="fa-solid fa-plus text-xs"></i></div>
                     </div>
                 </div>
             </a>
             {% empty %}
-            <p class="text-white/40 text-center col-span-full uppercase font-bold tracking-widest">{% trans "Aucune annonce disponible" %}</p>
+            <p class="text-slate-400 text-center col-span-full uppercase font-bold tracking-widest">{% trans "Aucune annonce disponible" %}</p>
             {% endfor %}
         </div>
     </section>
 
-    <section class="max-w-7xl mx-auto px-6 py-20 bg-white/5 rounded-[4rem] mb-32 border border-white/5 reveal">
+    <section class="max-w-7xl mx-auto px-6 py-20 bg-slate-50 rounded-[2.5rem] mb-32 border border-slate-100 reveal">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div id="direct" class="pillar-card rounded-[3.5rem] p-12">
+            <div id="direct" class="pillar-card rounded-3xl p-12 bg-white border border-slate-100 shadow-sm">
                 <i class="fa-solid fa-hotel text-blue-600 text-3xl mb-10"></i>
-                <h3 class="text-black text-3xl font-black mb-4 uppercase">{% trans "Direct" %}</h3>
+                <h3 class="text-[#0A2240] text-3xl font-black mb-4 uppercase">{% trans "Direct" %}</h3>
                 <p class="text-slate-600 text-sm mb-10 font-medium">{% trans "Promotion immobilière directe." %}</p>
-                <button class="bg-navy text-white w-full py-5 rounded-2xl hover:bg-blue-600 transition-all uppercase text-[10px] font-black tracking-widest">{% trans "Offres Directes" %}</button>
+                <button class="bg-[#0A2240] text-white w-full py-5 rounded-2xl hover:bg-blue-600 transition-all uppercase text-[10px] font-black tracking-widest">{% trans "Offres Directes" %}</button>
             </div>
-            <div id="construction" class="pillar-card rounded-[3.5rem] p-12">
+            <div id="construction" class="pillar-card rounded-3xl p-12 bg-white border border-slate-100 shadow-sm">
                 <i class="fa-solid fa-bridge text-emerald-600 text-3xl mb-10"></i>
-                <h3 class="text-black text-3xl font-black mb-4 uppercase">{% trans "BTP" %}</h3>
+                <h3 class="text-[#0A2240] text-3xl font-black mb-4 uppercase">{% trans "BTP" %}</h3>
                 <p class="text-slate-600 text-sm mb-10 font-medium">{% trans "Maîtrise complète VRD." %}</p>
-                <button class="bg-emerald-600 text-white w-full py-5 rounded-2xl hover:bg-navy transition-all uppercase text-[10px] font-black tracking-widest">{% trans "Nos Réalisations" %}</button>
+                <button class="bg-emerald-600 text-white w-full py-5 rounded-2xl hover:bg-[#0A2240] transition-all uppercase text-[10px] font-black tracking-widest">{% trans "Nos Réalisations" %}</button>
             </div>
-            <div id="expert" class="pillar-card rounded-[3.5rem] p-12">
+            <div id="expert" class="pillar-card rounded-3xl p-12 bg-white border border-slate-100 shadow-sm">
                 <i class="fa-solid fa-compass-drafting text-amber-600 text-3xl mb-10"></i>
-                <h3 class="text-black text-3xl font-black mb-4 uppercase">{% trans "Études" %}</h3>
+                <h3 class="text-[#0A2240] text-3xl font-black mb-4 uppercase">{% trans "Études" %}</h3>
                 <p class="text-slate-600 text-sm mb-10 font-medium">{% trans "Bureau d'études techniques." %}</p>
-                <button class="bg-amber-500 text-white w-full py-5 rounded-2xl hover:bg-navy transition-all uppercase text-[10px] font-black tracking-widest">{% trans "En savoir plus" %}</button>
+                <button class="bg-amber-500 text-white w-full py-5 rounded-2xl hover:bg-[#0A2240] transition-all uppercase text-[10px] font-black tracking-widest">{% trans "En savoir plus" %}</button>
             </div>
         </div>
     </section>

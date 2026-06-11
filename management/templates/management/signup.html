@@ -1,194 +1,183 @@
 {% extends 'management/base.html' %}
 {% load static %}
 {% load socialaccount %}
+{% load i18n %}
 
 {% block title %}HCI Portal | Inscription{% endblock %}
 
 {% block content %}
 
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700;800;900&display=swap');
 
     :root {
-        --gold: #D4AF37;
-        --gold-dim: rgba(212, 175, 55, 0.12);
-        --gold-glow: rgba(212, 175, 55, 0.25);
-        --navy: #0a0a0a;
-        --surface: rgba(255,255,255,0.03);
-        --border: rgba(255,255,255,0.07);
-        --text-muted: rgba(255,255,255,0.35);
-        --text-faint: rgba(255,255,255,0.15);
+        --architect-blue: #0052B4;
+        --architect-navy: #0A2240;
+        --architect-slate: #64748B;
+        --architect-bg: #F8FAFC;
+        --architect-border: #E2E8F0;
     }
 
     .auth-wrap {
         font-family: 'DM Sans', sans-serif;
-        min-height: 90vh;
+        min-height: 85vh;
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: 2rem 1rem;
+        padding: 3rem 1rem;
         position: relative;
-        overflow: hidden;
-    }
-
-    .auth-wrap::before {
-        content: '';
-        position: fixed;
-        top: -20%;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 600px;
-        height: 600px;
-        background: radial-gradient(ellipse, rgba(212,175,55,0.04) 0%, transparent 70%);
-        pointer-events: none;
+        background-color: var(--architect-bg);
     }
 
     .auth-container {
         width: 100%;
-        max-width: 420px;
-        animation: fadeUp 0.5s ease both;
+        max-width: 440px;
+        animation: architectFadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
     }
 
-    @keyframes fadeUp {
-        from { opacity: 0; transform: translateY(16px); }
+    @keyframes architectFadeUp {
+        from { opacity: 0; transform: translateY(20px); }
         to   { opacity: 1; transform: translateY(0); }
     }
 
-    /* ── Brand ── */
+    /* ── Brand Layout ── */
     .brand {
         text-align: center;
-        margin-bottom: 2rem;
+        margin-bottom: 2.2rem;
     }
 
     .brand-logo {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        width: 52px;
-        height: 52px;
-        background: var(--gold);
-        border-radius: 14px;
-        margin-bottom: 1rem;
-        box-shadow: 0 8px 32px var(--gold-glow);
-        transition: transform 0.4s ease;
+        width: 56px;
+        height: 56px;
+        background: var(--architect-navy);
+        border-radius: 16px;
+        margin-bottom: 1.1rem;
+        box-shadow: 0 8px 24px rgba(10, 34, 64, 0.08);
+        transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         text-decoration: none;
     }
-    .brand-logo:hover { transform: rotate(6deg) scale(1.05); }
-    .brand-logo img { width: 30px; height: 30px; }
+    .brand-logo:hover { transform: scale(1.04) rotate(4deg); }
+    .brand-logo img { width: 32px; height: 32px; object-fit: contain; }
 
     .brand-title {
         font-family: 'Bebas Neue', sans-serif;
-        font-size: 2.4rem;
-        letter-spacing: 0.05em;
-        color: #fff;
+        font-size: 2.6rem;
+        letter-spacing: 0.04em;
+        color: var(--architect-navy);
         line-height: 1;
-        margin-bottom: 0.35rem;
+        margin-bottom: 0.4rem;
     }
-    .brand-title span { color: var(--gold); }
+    .brand-title span { color: var(--architect-blue); }
 
     .brand-sub {
-        font-size: 0.6rem;
-        font-weight: 600;
-        letter-spacing: 0.35em;
+        font-size: 0.62rem;
+        font-weight: 800;
+        letter-spacing: 0.3em;
         text-transform: uppercase;
-        color: var(--text-faint);
+        color: var(--architect-slate);
+        opacity: 0.8;
     }
 
-    /* ── Card ── */
+    /* ── Card Component ── */
     .auth-card {
-        background: linear-gradient(160deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.015) 100%);
-        border: 1px solid var(--border);
-        border-radius: 28px;
-        padding: 2.2rem 2rem;
-        backdrop-filter: blur(20px);
+        background: #FFFFFF;
+        border: 1px solid var(--architect-border);
+        border-radius: 2rem;
+        padding: 2.8rem 2.2rem;
+        box-shadow: 0 10px 40px rgba(10, 34, 64, 0.03);
     }
 
-    /* ── Tab switcher ── */
+    /* ── Route Switcher Tabs ── */
     .tab-row {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        background: rgba(255,255,255,0.03);
-        border: 1px solid var(--border);
+        background: #F1F5F9;
+        border: 1px solid var(--architect-border);
         border-radius: 14px;
         padding: 4px;
-        margin-bottom: 1.8rem;
+        margin-bottom: 2rem;
         gap: 4px;
     }
 
     .tab-btn {
-        padding: 0.6rem;
+        padding: 0.7rem;
         border: none;
         background: transparent;
-        color: var(--text-muted);
+        color: var(--architect-slate);
         font-family: 'DM Sans', sans-serif;
-        font-size: 0.7rem;
-        font-weight: 700;
-        letter-spacing: 0.12em;
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.1em;
         text-transform: uppercase;
         border-radius: 10px;
         cursor: pointer;
-        transition: all 0.25s ease;
+        transition: all 0.2s ease;
         text-decoration: none;
         text-align: center;
         display: block;
     }
+
     .tab-btn.active {
-        background: var(--gold);
-        color: #0a0a0a;
-        box-shadow: 0 4px 16px var(--gold-glow);
-    }
-    .tab-btn:not(.active):hover {
-        color: rgba(255,255,255,0.6);
-        background: rgba(255,255,255,0.04);
+        background: #FFFFFF;
+        color: var(--architect-navy);
+        box-shadow: 0 4px 12px rgba(10, 34, 64, 0.04);
     }
 
-    /* ── Fields ── */
+    .tab-btn:not(.active):hover {
+        color: var(--architect-navy);
+    }
+
+    /* ── Fields Layout Framework ── */
     .fields-grid-2 {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 0.9rem;
-        margin-bottom: 1rem;
+        gap: 1rem;
+        margin-bottom: 0.2rem;
     }
 
-    .field-group { margin-bottom: 1rem; }
+    .field-group { margin-bottom: 1.2rem; }
 
     .field-label {
         display: block;
         font-size: 0.65rem;
-        font-weight: 700;
-        letter-spacing: 0.18em;
+        font-weight: 800;
+        letter-spacing: 0.15em;
         text-transform: uppercase;
-        color: var(--text-muted);
-        margin-bottom: 0.45rem;
+        color: var(--architect-navy);
+        margin-bottom: 0.5rem;
         margin-left: 2px;
     }
 
     .field-input {
         width: 100%;
         box-sizing: border-box;
-        background: rgba(255,255,255,0.035);
-        border: 1px solid var(--border);
+        background: #F8FAFC;
+        border: 1px solid var(--architect-border);
         border-radius: 14px;
-        padding: 0.85rem 1rem;
+        padding: 0.9rem 1.1rem;
         font-family: 'DM Sans', sans-serif;
-        font-size: 0.82rem;
-        font-weight: 500;
-        color: #fff;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--architect-navy);
         outline: none;
-        transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+        transition: all 0.2s ease;
     }
-    .field-input::placeholder { color: var(--text-faint); }
+    .field-input::placeholder { color: var(--architect-slate); opacity: 0.5; }
     .field-input:focus {
-        border-color: rgba(212,175,55,0.45);
-        background: rgba(255,255,255,0.055);
-        box-shadow: 0 0 0 3px rgba(212,175,55,0.08);
+        border-color: var(--architect-blue);
+        background: #FFFFFF;
+        box-shadow: 0 0 0 4px rgba(0, 82, 180, 0.06);
     }
     .field-input.error {
-        border-color: rgba(239,68,68,0.6) !important;
-        background: rgba(239,68,68,0.04) !important;
+        border-color: #DC2626 !important;
+        background: #FEF2F2 !important;
+        box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.06) !important;
     }
 
-    /* Phone field */
+    /* Custom Phone Input Setup */
     .phone-wrap {
         position: relative;
         display: flex;
@@ -196,160 +185,156 @@
     }
     .phone-prefix {
         position: absolute;
-        left: 1rem;
+        left: 1.1rem;
         display: flex;
         align-items: center;
-        gap: 0.4rem;
-        padding-right: 0.7rem;
-        border-right: 1px solid var(--border);
+        gap: 0.5rem;
+        padding-right: 0.8rem;
+        border-right: 1px solid var(--architect-border);
         height: 1.4rem;
         pointer-events: none;
     }
     .phone-prefix span {
-        font-size: 0.78rem;
+        font-size: 0.82rem;
         font-weight: 700;
-        color: rgba(255,255,255,0.6);
+        color: var(--architect-navy);
     }
-    .phone-wrap .field-input { padding-left: 5.2rem; }
+    .phone-wrap .field-input { padding-left: 5.6rem; }
 
-    /* Error text */
+    /* Unified Field System Errors */
     .error-text {
-        color: #f87171;
-        font-size: 0.65rem;
-        font-weight: 700;
-        letter-spacing: 0.05em;
-        text-transform: uppercase;
-        margin-top: 0.3rem;
+        color: #DC2626;
+        font-size: 0.72rem;
+        font-weight: 600;
+        margin-top: 0.4rem;
         margin-left: 2px;
         display: none;
     }
     .error-text.visible { display: block; }
 
-    /* ── Submit ── */
+    /* ── Primary Action Triggers ── */
     .btn-primary {
         width: 100%;
-        background: var(--gold);
-        color: #0a0a0a;
+        background: var(--architect-blue);
+        color: #FFFFFF;
         border: none;
         border-radius: 14px;
-        padding: 1rem;
+        padding: 1.05rem;
         font-family: 'DM Sans', sans-serif;
-        font-size: 0.76rem;
+        font-size: 0.78rem;
         font-weight: 800;
-        letter-spacing: 0.18em;
+        letter-spacing: 0.15em;
         text-transform: uppercase;
         cursor: pointer;
-        transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s;
-        box-shadow: 0 6px 24px var(--gold-glow);
-        margin-top: 0.4rem;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 12px rgba(0, 82, 180, 0.15);
+        margin-top: 0.5rem;
     }
-    .btn-primary:hover  { transform: translateY(-1px); box-shadow: 0 10px 32px var(--gold-glow); }
-    .btn-primary:active { transform: scale(0.98); opacity: 0.9; }
+    .btn-primary:hover  { background: var(--architect-navy); transform: translateY(-1px); box-shadow: 0 8px 20px rgba(10, 34, 64, 0.15); }
+    .btn-primary:active { transform: scale(0.99); }
 
-    /* ── Divider ── */
+    /* ── Metric Visual Separator ── */
     .divider {
         display: flex;
         align-items: center;
-        gap: 1rem;
-        margin: 1.4rem 0;
+        gap: 1.1rem;
+        margin: 1.6rem 0;
     }
     .divider::before, .divider::after {
         content: '';
         flex: 1;
         height: 1px;
-        background: var(--border);
+        background: var(--architect-border);
     }
     .divider span {
-        font-size: 0.6rem;
-        font-weight: 700;
-        letter-spacing: 0.3em;
+        font-size: 0.65rem;
+        font-weight: 800;
+        letter-spacing: 0.25em;
         text-transform: uppercase;
-        color: var(--text-faint);
+        color: var(--architect-slate);
     }
 
-    /* ── Google ── */
+    /* ── Unified Identity Provider Button ── */
     .btn-google {
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 0.7rem;
+        gap: 0.75rem;
         width: 100%;
-        background: rgba(255,255,255,0.05);
-        border: 1px solid var(--border);
+        background: #FFFFFF;
+        border: 1px solid var(--architect-border);
         border-radius: 14px;
-        padding: 0.85rem;
-        color: rgba(255,255,255,0.65);
+        padding: 0.9rem;
+        color: var(--architect-navy);
         font-family: 'DM Sans', sans-serif;
-        font-size: 0.76rem;
+        font-size: 0.78rem;
         font-weight: 700;
-        letter-spacing: 0.06em;
+        letter-spacing: 0.02em;
         text-decoration: none;
-        transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.15s;
+        box-shadow: 0 2px 6px rgba(10, 34, 64, 0.01);
+        transition: all 0.2s ease;
     }
     .btn-google:hover {
-        background: rgba(255,255,255,0.09);
-        border-color: rgba(255,255,255,0.15);
-        color: #fff;
+        background: #F8FAFC;
+        border-color: var(--architect-slate);
         transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(10, 34, 64, 0.04);
     }
-    .btn-google:active { transform: scale(0.98); }
+    .btn-google:active { transform: scale(0.99); }
 
-    /* ── Footer ── */
+    /* ── Navigation Footer ── */
     .auth-footer {
         text-align: center;
-        margin-top: 1.6rem;
-        font-size: 0.74rem;
-        color: var(--text-muted);
+        margin-top: 1.8rem;
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: var(--architect-slate);
     }
     .auth-footer a {
-        color: var(--gold);
-        font-weight: 600;
+        color: var(--architect-blue);
+        font-weight: 800;
         text-decoration: none;
-        margin-left: 4px;
+        margin-left: 6px;
+        border-bottom: 1px solid transparent;
+        transition: all 0.2s ease;
     }
-    .auth-footer a:hover { text-decoration: underline; }
+    .auth-footer a:hover { color: var(--architect-navy); border-color: var(--architect-navy); }
 </style>
 
 <div class="auth-wrap">
     <div class="auth-container">
 
-        <!-- Brand -->
         <div class="brand">
             <a href="{% url 'home' %}" class="brand-logo">
-                <img src="{% static 'img/logo.png' %}" alt="HCI">
+                <img src="{% static 'img/logo.png' %}" alt="HCI Platform Logo">
             </a>
             <div class="brand-title">HCI <span>PORTAL</span></div>
-            <div class="brand-sub">Accès Sécurisé · Ingénierie & Market</div>
+            <div class="brand-sub">{% trans "Accès Sécurisé · Ingénierie & Market" %}</div>
         </div>
 
-        <!-- Card -->
         <div class="auth-card">
 
-            <!-- Tab row -->
             <div class="tab-row">
-                <a href="{% url 'login' %}" class="tab-btn">Se connecter</a>
-                <a href="{% url 'signup' %}" class="tab-btn active">S'inscrire</a>
+                <a href="{% url 'login' %}" class="tab-btn">{% trans "Se connecter" %}</a>
+                <a href="{% url 'signup' %}" class="tab-btn active">{% trans "S'inscrire" %}</a>
             </div>
 
-            <!-- Signup form -->
             <form method="POST" id="signup-form">
                 {% csrf_token %}
 
-                <!-- Name row -->
                 <div class="fields-grid-2">
                     <div class="field-group" style="margin-bottom:0">
-                        <label class="field-label">Nom *</label>
+                        <label class="field-label">{% trans "Nom *" %}</label>
                         <input type="text" name="last_name" placeholder="Dupont" class="field-input" required>
                     </div>
                     <div class="field-group" style="margin-bottom:0">
-                        <label class="field-label">Prénom *</label>
+                        <label class="field-label">{% trans "Prénom *" %}</label>
                         <input type="text" name="first_name" placeholder="Mohamed" class="field-input" required>
                     </div>
                 </div>
 
-                <!-- Phone -->
                 <div class="field-group">
-                    <label class="field-label">Téléphone *</label>
+                    <label class="field-label">{% trans "Téléphone *" %}</label>
                     <div class="phone-wrap">
                         <div class="phone-prefix">
                             <img src="https://flagcdn.com/w20/ma.png" width="18" alt="MA">
@@ -359,39 +344,34 @@
                     </div>
                 </div>
 
-                <!-- Email -->
                 <div class="field-group">
-    <label class="field-label">Email *</label>
-    <input type="email" name="email" value="{{ request.POST.email }}" 
-           class="field-input {% if form.email.errors %}error{% endif %}" required>
-    
-    {% if form.email.errors %}
-        {% for error in form.email.errors %}
-            <p class="error-text visible">{{ error }}</p>
-        {% endfor %}
-    {% endif %}
-</div>
+                    <label class="field-label">{% trans "Email *" %}</label>
+                    <input type="email" name="email" value="{{ request.POST.email }}" 
+                           class="field-input {% if form.email.errors %}error{% endif %}" required>
+                    
+                    {% if form.email.errors %}
+                        {% for error in form.email.errors %}
+                            <p class="error-text visible">{{ error }}</p>
+                        {% endfor %}
+                    {% endif %}
+                </div>
 
-                <!-- Password -->
                 <div class="field-group">
-                    <label class="field-label">Mot de passe *</label>
+                    <label class="field-label">{% trans "Mot de passe *" %}</label>
                     <input type="password" name="password1" id="pw1" class="field-input" required>
                 </div>
 
-                <!-- Confirm password -->
                 <div class="field-group">
-                    <label class="field-label">Confirmer le mot de passe *</label>
+                    <label class="field-label">{% trans "Confirmer le mot de passe *" %}</label>
                     <input type="password" name="password2" id="pw2" class="field-input" required>
-                    <p class="error-text" id="pw-error">Les mots de passe ne correspondent pas</p>
+                    <p class="error-text" id="pw-error">{% trans "Les mots de passe ne correspondent pas" %}</p>
                 </div>
 
-                <button type="submit" class="btn-primary">Créer mon compte</button>
+                <button type="submit" class="btn-primary">{% trans "Créer mon compte" %}</button>
             </form>
 
-            <!-- Divider -->
-            <div class="divider"><span>ou</span></div>
+            <div class="divider"><span>{% trans "ou" %}</span></div>
 
-            <!-- Google — plain redirect -->
             <a href="{% provider_login_url 'google' %}" class="btn-google">
                 <svg width="18" height="18" viewBox="0 0 24 24">
                     <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -399,14 +379,13 @@
                     <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
                     <path d="M12 5.38c1.62 0 3.06.56 4.21 1.66l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
                 </svg>
-                S'inscrire avec Google
+                {% trans "S'inscrire avec Google" %}
             </a>
 
         </div>
 
-        <!-- Footer -->
         <div class="auth-footer">
-            Déjà un compte ?<a href="{% url 'account_login' %}">Se connecter</a>
+            {% trans "Déjà un compte ?" %}<a href="{% url 'account_login' %}">{% trans "Se connecter" %}</a>
         </div>
 
     </div>

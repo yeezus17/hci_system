@@ -1,46 +1,126 @@
 {% extends 'management/base.html' %}
+{% load static %}
+{% load i18n %}
+
 {% block extra_css %}
 <style>
-    .glass-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.08); }
-    .input-field { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.1); color: #FFFFFF; transition: all 0.3s; }
-    .input-field:focus { border-color: var(--gold); background: rgba(255, 255, 255, 0.05); outline: none; }
+    :root {
+        --architect-blue: #0052B4;
+        --architect-navy: #0A2240;
+        --architect-slate: #64748B;
+        --architect-bg: #F8FAFC;
+        --architect-border: #E2E8F0;
+    }
+
+    .glass-card { 
+        background: #FFFFFF; 
+        border: 1px solid var(--architect-border); 
+        box-shadow: 0 4px 20px rgba(10, 34, 64, 0.02);
+    }
+    
+    .input-field { 
+        box-sizing: border-box;
+        background: #F8FAFC; 
+        border: 1px solid var(--architect-border); 
+        color: var(--architect-navy); 
+        font-family: 'DM Sans', sans-serif;
+        font-weight: 600;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); 
+    }
+    .input-field::placeholder {
+        color: var(--architect-slate);
+        opacity: 0.4;
+    }
+    .input-field:focus { 
+        border-color: var(--architect-blue); 
+        background: #FFFFFF; 
+        outline: none; 
+        box-shadow: 0 0 0 4px rgba(0, 82, 180, 0.06);
+    }
     
     #map {
         height: 400px;
         width: 100%;
         border-radius: 2rem;
-        border: 1px solid rgba(212, 175, 55, 0.2);
+        border: 1px solid var(--architect-border);
     }
 
     .btn-publish {
-        background: transparent;
-        border: 1px solid var(--gold);
-        color: var(--gold);
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        background: var(--architect-blue);
+        border: 1px solid var(--architect-blue);
+        color: #FFFFFF;
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         position: relative;
         overflow: hidden;
     }
     .btn-publish:hover {
-        background: var(--gold);
-        color: var(--navy);
-        box-shadow: 0 0 40px rgba(212, 175, 55, 0.3);
+        background: var(--architect-navy);
+        border-color: var(--architect-navy);
+        box-shadow: 0 15px 35px rgba(10, 34, 64, 0.15);
     }
-    .step-num { font-family: 'Outfit', sans-serif; font-size: 4rem; color: rgba(212, 175, 55, 0.1); line-height: 1; }
+    .step-num { 
+        font-family: 'Outfit', sans-serif; 
+        font-size: 4rem; 
+        color: rgba(10, 34, 64, 0.04); 
+        line-height: 1; 
+    }
 
-    .preview-thumb { aspect-ratio: 1; border-radius: 1rem; overflow: hidden; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); position: relative; }
+    /* ── Geolocation Button Custom Style ── */
+    .btn-locate {
+        background: #FFFFFF;
+        border: 1px solid var(--architect-border);
+        color: var(--architect-navy);
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .btn-locate:hover {
+        border-color: var(--architect-blue);
+        color: var(--architect-blue);
+        background: rgba(0, 82, 180, 0.02);
+    }
+    .btn-locate:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    /* ── Multi-File Gallery Elements ── */
+    .preview-thumb { 
+        aspect-ratio: 1; 
+        border-radius: 1rem; 
+        overflow: hidden; 
+        background: #F8FAFC; 
+        border: 1px solid var(--architect-border); 
+        position: relative; 
+    }
     .preview-thumb img { width: 100%; height: 100%; object-fit: cover; }
     .preview-thumb .video-placeholder { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.5rem; }
-    .preview-thumb .remove-btn { position: absolute; top: 6px; right: 6px; width: 22px; height: 22px; background: rgba(0,0,0,0.7); border: 1px solid rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 9px; color: white; }
-    .preview-thumb .remove-btn:hover { background: #D4AF37; color: black; }
+    
+    .preview-thumb .remove-btn { 
+        position: absolute; 
+        top: 6px; 
+        right: 6px; 
+        width: 22px; 
+        height: 22px; 
+        background: rgba(10, 34, 64, 0.85); 
+        border: 1px solid rgba(255,255,255,0.2); 
+        border-radius: 50%; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        cursor: pointer; 
+        font-size: 9px; 
+        color: #FFFFFF; 
+        transition: background 0.2s ease;
+    }
+    .preview-thumb .remove-btn:hover { background: #EF4444; color: #FFFFFF; }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="max-w-7xl mx-auto px-6 py-10">
     <div class="flex justify-between items-center mb-16">
-        <h1 class="brand-font font-black text-4xl tracking-tighter uppercase">Publier <span class="text-gold">Votre annonce</span></h1>
-        <div class="h-[1px] flex-grow mx-8 bg-white/5"></div>
-        <a href="/" class="text-[10px] font-bold tracking-[0.3em] uppercase text-white/40 hover:text-gold transition-colors">Fermer <i class="fa-solid fa-xmark ml-2"></i></a>
+        <h1 class="brand-font font-black text-4xl tracking-tighter uppercase text-slate-900">Publier <span class="text-blue-600">Votre annonce</span></h1>
+        <div class="h-[1px] flex-grow mx-8 bg-slate-200"></div>
+        <a href="/" class="text-[10px] font-bold tracking-[0.3em] uppercase text-slate-400 hover:text-blue-600 transition-colors">Fermer <i class="fa-solid fa-xmark ml-2"></i></a>
     </div>
 
     <form method="POST" enctype="multipart/form-data" class="grid lg:grid-cols-12 gap-10">
@@ -49,104 +129,113 @@
         <input type="hidden" name="longitude" id="lng-input" value="-6.589">
 
         <div class="lg:col-span-7 space-y-8">
-
-            <!-- STEP 01: Basic Info -->
-            <div class="glass-card p-10 rounded-[3rem] relative">
-                <span class="absolute top-8 right-10 step-num">01</span>
-                <h2 class="font-bold text-xl mb-8">Informations de base</h2>
+            <!-- STEP 01: Core Specifications Metadata -->
+            <div class="glass-card p-10 rounded-[2.5rem] relative">
+                <span class="absolute top-8 right-10 step-num select-none font-black">01</span>
+                <h2 class="font-black text-xl text-slate-900 mb-8 uppercase tracking-tight">Informations de base</h2>
                 <div class="space-y-6">
                     <div>
-                        <label class="text-[10px] font-black uppercase tracking-widest text-gold mb-2 block">Titre du bien</label>
+                        <label class="text-[10px] font-black uppercase tracking-widest text-blue-600 mb-2 block">Titre du bien</label>
                         <input type="text" name="titre" required placeholder="Ex: Magnifique Villa avec piscine" class="input-field w-full p-5 rounded-2xl">
                     </div>
                     <div class="grid grid-cols-2 gap-6">
                         <div>
-                            <label class="text-[10px] font-black uppercase tracking-widest text-gold mb-2 block">Type de transaction</label>
-                            <select name="type_transaction" class="input-field w-full p-5 rounded-2xl appearance-none cursor-pointer">
-                                <option value="ACHAT">Achat</option>
-                                <option value="VENTE">Vente</option>
-                                <option value="LOCATION">Location</option>
-                            </select>
+                            <label class="text-[10px] font-black uppercase tracking-widest text-blue-600 mb-2 block">Type de transaction</label>
+                            <div class="relative">
+                                <select name="type_transaction" class="input-field w-full p-5 rounded-2xl appearance-none cursor-pointer pr-10">
+                                    <option value="ACHAT">Achat</option>
+                                    <option value="VENTE">Vente</option>
+                                    <option value="LOCATION">Location</option>
+                                </select>
+                                <i class="fa-solid fa-chevron-down absolute right-5 top-1/2 -translate-y-1/2 text-[11px] text-slate-400 pointer-events-none"></i>
+                            </div>
                         </div>
                         <div>
-                            <label class="text-[10px] font-black uppercase tracking-widest text-gold mb-2 block">Catégorie</label>
-                            <select name="type_bien" class="input-field w-full p-5 rounded-2xl appearance-none cursor-pointer">
-                                <option value="APPARTEMENT">Appartement</option>
-                                <option value="VILLA">Villa</option>
-                                <option value="BUREAU">Bureau</option>
-                                <option value="TERRAIN">Terrain</option>
-                            </select>
+                            <label class="text-[10px] font-black uppercase tracking-widest text-blue-600 mb-2 block">Catégorie</label>
+                            <div class="relative">
+                                <select name="type_bien" class="input-field w-full p-5 rounded-2xl appearance-none cursor-pointer pr-10">
+                                    <option value="APPARTEMENT">Appartement</option>
+                                    <option value="VILLA">Villa</option>
+                                    <option value="BUREAU">Bureau</option>
+                                    <option value="TERRAIN">Terrain</option>
+                                </select>
+                                <i class="fa-solid fa-chevron-down absolute right-5 top-1/2 -translate-y-1/2 text-[11px] text-slate-400 pointer-events-none"></i>
+                            </div>
                         </div>
                     </div>
                     <div>
-                        <label class="text-[10px] font-black uppercase tracking-widest text-gold mb-2 block">Prix (DH)</label>
+                        <label class="text-[10px] font-black uppercase tracking-widest text-blue-600 mb-2 block">Prix (DH)</label>
                         <input type="number" name="prix" required placeholder="Ex: 1500000" class="input-field w-full p-5 rounded-2xl">
                     </div>
                     <div>
-                        <label class="text-[10px] font-black uppercase tracking-widest text-gold mb-2 block">Description</label>
+                        <label class="text-[10px] font-black uppercase tracking-widest text-blue-600 mb-2 block">Description</label>
                         <textarea name="description" rows="4" placeholder="Décrivez votre bien en détail..." class="input-field w-full p-5 rounded-2xl resize-none"></textarea>
                     </div>
                 </div>
             </div>
 
-            <!-- STEP 02: Media Gallery -->
-            <div class="glass-card p-10 rounded-[3rem] relative">
-                <span class="absolute top-8 right-10 step-num">02</span>
-                <h2 class="font-bold text-xl mb-6">Galerie Photos & Vidéos</h2>
+            <!-- STEP 02: Binary File Assets Handling -->
+            <div class="glass-card p-10 rounded-[2.5rem] relative">
+                <span class="absolute top-8 right-10 step-num select-none font-black">02</span>
+                <h2 class="font-black text-xl text-slate-900 mb-6 uppercase tracking-tight">Galerie Photos & Vidéos</h2>
 
-                <label for="media_files" class="flex flex-col items-center justify-center border-2 border-dashed border-white/10 rounded-3xl p-12 hover:bg-white/[0.02] hover:border-[#D4AF37]/30 cursor-pointer transition-all group">
-                    <i class="fa-solid fa-cloud-arrow-up text-[#D4AF37] text-3xl mb-4 group-hover:scale-110 transition-transform"></i>
-                    <span id="upload-label" class="text-white/40 text-sm font-bold">Déposez vos photos & vidéos ici</span>
-                    <span class="text-white/20 text-xs mt-2 uppercase tracking-widest font-black">Plusieurs fichiers acceptés</span>
+                <label for="media_files" class="flex flex-col items-center justify-center border-2 border-dashed border-slate-200 rounded-3xl p-12 bg-slate-50/50 hover:bg-slate-50 hover:border-blue-600/50 cursor-pointer transition-all group">
+                    <i class="fa-solid fa-cloud-arrow-up text-blue-600 text-3xl mb-4 group-hover:scale-110 transition-transform"></i>
+                    <span id="upload-label" class="text-slate-500 text-sm font-bold">Déposez vos photos & vidéos ici</span>
+                    <span class="text-slate-400 text-xs mt-2 uppercase tracking-widest font-black">Plusieurs fichiers acceptés</span>
                     <input type="file" id="media_files" name="media_files" multiple accept="image/*,video/*" class="hidden">
                 </label>
 
-                <!-- Preview Grid -->
                 <div id="preview-grid" class="grid grid-cols-3 gap-3 mt-6 hidden"></div>
 
-                <!-- File count badge -->
                 <div id="file-count-badge" class="hidden mt-4 flex items-center gap-3">
-                    <span class="text-[9px] font-black uppercase tracking-widest text-[#D4AF37]">
+                    <span class="text-[9px] font-black uppercase tracking-widest text-blue-600 bg-blue-50 px-3 py-1.5 rounded-lg border border-blue-100">
                         <i class="fa-solid fa-check-circle mr-1"></i>
                         <span id="file-count-text"></span>
                     </span>
-                    <button type="button" onclick="clearFiles()" class="text-[9px] font-black uppercase tracking-widest text-white/20 hover:text-white/60 transition-colors">
+                    <button type="button" onclick="clearFiles()" class="text-[9px] font-black uppercase tracking-widest text-slate-400 hover:text-red-500 transition-colors">
                         ✕ Tout effacer
                     </button>
                 </div>
             </div>
         </div>
 
-        <!-- RIGHT COLUMN -->
+        <!-- RIGHT ARTIFACT BOUND: Mapping Infrastructure Modules -->
         <div class="lg:col-span-5 space-y-8">
-            <div class="glass-card p-10 rounded-[3rem] relative flex flex-col h-full">
-                <span class="absolute top-8 right-10 step-num">03</span>
-                <h2 class="font-bold text-xl mb-8">Localisation</h2>
+            <div class="glass-card p-10 rounded-[2.5rem] relative flex flex-col h-full">
+                <span class="absolute top-8 right-10 step-num select-none font-black">03</span>
+                <h2 class="font-black text-xl text-slate-900 mb-8 uppercase tracking-tight">Localisation</h2>
 
                 <div>
-                    <label class="text-[10px] font-black uppercase tracking-widest text-gold mb-2 block">Ville</label>
+                    <label class="text-[10px] font-black uppercase tracking-widest text-blue-600 mb-2 block">Ville</label>
                     <input type="text" name="ville" value="Kenitra" class="input-field w-full p-5 rounded-2xl mb-6">
                 </div>
 
-                <p class="text-[9px] font-black uppercase tracking-[0.3em] text-white/20 mb-4">
-                    <i class="fa-solid fa-location-crosshairs text-[#D4AF37] mr-2"></i>Cliquez sur la carte pour épingler
-                </p>
+                <!-- Locality Info & Automated Localization Module Layout Structure -->
+                <div class="flex justify-between items-center mb-4">
+                    <p class="text-[9px] font-black uppercase tracking-[0.25em] text-slate-400 flex items-center">
+                        <i class="fa-solid fa-location-crosshairs text-blue-600 mr-2 text-xs"></i>Cliquez sur la carte pour épingler
+                    </p>
+                    <button type="button" id="geolocation-btn" onclick="getLocation()" class="btn-locate flex items-center gap-2 px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest shadow-sm">
+                        <i class="fa-solid fa-crosshairs"></i> Me géolocaliser
+                    </button>
+                </div>
                 
-                <div id="map" class="flex-grow shadow-2xl"></div>
+                <div id="map" class="flex-grow shadow-sm"></div>
 
                 <div class="mt-6 grid grid-cols-2 gap-3">
-                    <div class="bg-white/[0.02] border border-white/5 rounded-2xl p-4">
-                        <p class="text-[8px] font-black uppercase text-white/20 mb-1">Latitude</p>
-                        <p id="lat-display" class="text-xs font-black text-[#D4AF37]">34.257000</p>
+                    <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4">
+                        <p class="text-[8px] font-black uppercase text-slate-400 mb-1">Latitude</p>
+                        <p id="lat-display" class="text-xs font-black text-slate-800">34.257000</p>
                     </div>
-                    <div class="bg-white/[0.02] border border-white/5 rounded-2xl p-4">
-                        <p class="text-[8px] font-black uppercase text-white/20 mb-1">Longitude</p>
-                        <p id="lng-display" class="text-xs font-black text-[#D4AF37]">-6.589000</p>
+                    <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4">
+                        <p class="text-[8px] font-black uppercase text-slate-400 mb-1">Longitude</p>
+                        <p id="lng-display" class="text-xs font-black text-slate-800">-6.589000</p>
                     </div>
                 </div>
 
-                <button type="submit" class="btn-publish w-full mt-10 py-6 rounded-2xl font-black uppercase tracking-[0.4em] text-xs">
-                    Publier sur H.C.I <i class="fa-solid fa-paper-plane ml-2"></i>
+                <button type="submit" class="btn-publish w-full mt-10 py-6 rounded-2xl font-black uppercase tracking-[0.35em] text-xs active:scale-[0.99]">
+                    Publier l'annonce <i class="fa-solid fa-paper-plane ml-2"></i>
                 </button>
             </div>
         </div>
@@ -155,10 +244,10 @@
 {% endblock %}
 
 {% block extra_js %}
-<script src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_key }}&callback=initMap"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_key }}&callback=initMap" async defer></script>
 
 <script>
-    // ── MAP ──────────────────────────────────────────────────────────────────
+    // ── MAP CANVAS ENGINE INITIALIZATION ─────────────────────────────────────
     let map, marker;
     function initMap() {
         const kenitra = { lat: 34.257, lng: -6.589 };
@@ -168,14 +257,15 @@
             disableDefaultUI: true,
             zoomControl: true,
             styles: [
-                { "featureType": "all", "elementType": "labels.text.fill", "stylers": [{ "color": "#ffffff" }] },
-                { "featureType": "all", "elementType": "labels.text.stroke", "stylers": [{ "visibility": "on" }, { "color": "#060b1a" }, { "weight": 2 }] },
-                { "featureType": "all", "elementType": "labels.icon", "stylers": [{ "visibility": "off" }] },
-                { "featureType": "landscape", "elementType": "geometry", "stylers": [{ "color": "#060b1a" }] },
-                { "featureType": "poi", "elementType": "geometry", "stylers": [{ "color": "#0a1126" }] },
-                { "featureType": "road", "elementType": "geometry", "stylers": [{ "color": "#1a233a" }] },
-                { "featureType": "road.highway", "elementType": "geometry", "stylers": [{ "color": "#D4AF37" }, { "weight": 0.2 }, { "lightness": -40 }] },
-                { "featureType": "water", "elementType": "geometry", "stylers": [{ "color": "#0a1126" }] }
+                { "featureType": "all", "elementType": "labels.text.fill", "stylers": [{ "color": "#1e293b" }] },
+                { "featureType": "all", "elementType": "labels.text.stroke", "stylers": [{ "visibility": "on" }, { "color": "#ffffff" }, { "weight": 3 }] },
+                { "featureType": "all", "elementType": "labels.icon", "stylers": [{ "visibility": "simplified" }, { "opacity": 0.6 }] },
+                { "featureType": "landscape", "elementType": "geometry", "stylers": [{ "color": "#f1f5f9" }] },
+                { "featureType": "poi", "elementType": "geometry", "stylers": [{ "color": "#e2e8f0" }] },
+                { "featureType": "road", "elementType": "geometry", "stylers": [{ "color": "#ffffff" }] },
+                { "featureType": "road.local", "elementType": "geometry", "stylers": [{ "border-weight": 0.1 }] },
+                { "featureType": "road.highway", "elementType": "geometry", "stylers": [{ "color": "#0052B4" }, { "weight": 0.4 }, { "opacity": 0.15 }] },
+                { "featureType": "water", "elementType": "geometry", "stylers": [{ "color": "#cbd5e1" }] }
             ]
         });
 
@@ -185,27 +275,69 @@
             draggable: true,
             icon: {
                 path: google.maps.SymbolPath.CIRCLE,
-                fillColor: "#D4AF37",
+                fillColor: "#0052B4",
                 fillOpacity: 1,
-                scale: 10,
+                scale: 9,
                 strokeColor: "#FFFFFF",
-                strokeWeight: 2
+                strokeWeight: 2.5
             }
         });
 
-        const update = (ll) => {
-            const lat = ll.lat().toFixed(6);
-            const lng = ll.lng().toFixed(6);
-            document.getElementById('lat-input').value = lat;
-            document.getElementById('lng-input').value = lng;
-            document.getElementById('lat-display').innerText = lat;
-            document.getElementById('lng-display').innerText = lng;
-        };
-        map.addListener("click", (e) => { marker.setPosition(e.latLng); update(e.latLng); });
-        marker.addListener("dragend", (e) => { update(e.latLng); });
+        map.addListener("click", (e) => { marker.setPosition(e.latLng); updateCoordinates(e.latLng); });
+        marker.addListener("dragend", (e) => { updateCoordinates(e.latLng); });
     }
 
-    // ── MULTI-FILE UPLOAD PREVIEW ────────────────────────────────────────────
+    // ── COORDINATES PIPELINE UPDATE REFACTOR ────────────────────────────────
+    function updateCoordinates(latLng) {
+        const lat = latLng.lat().toFixed(6);
+        const lng = latLng.lng().toFixed(6);
+        document.getElementById('lat-input').value = lat;
+        document.getElementById('lng-input').value = lng;
+        document.getElementById('lat-display').innerText = lat;
+        document.getElementById('lng-display').innerText = lng;
+    }
+
+    // ── AUTOMATED USER GEOLOCATION MODULE ─────────────────────────────────────
+    function getLocation() {
+        const geoBtn = document.getElementById('geolocation-btn');
+        if (!navigator.geolocation) {
+            alert("La géolocalisation n'est pas supportée par votre navigateur.");
+            return;
+        }
+
+        geoBtn.disabled = true;
+        geoBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Localisation...`;
+
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const userLatLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+                
+                // Re-center maps canvas system viewport state variables
+                map.setCenter(userLatLng);
+                map.setZoom(16); // Tight zoom on precise automated pinpoint target
+                marker.setPosition(userLatLng);
+                
+                // Pipe values onto target tracking displays and tracking inputs
+                updateCoordinates(userLatLng);
+
+                // Restore interactive layout components state 
+                geoBtn.disabled = false;
+                geoBtn.innerHTML = `<i class="fa-solid fa-crosshairs"></i> Me géolocaliser`;
+            },
+            (error) => {
+                let msg = "Impossible de récupérer votre position.";
+                if (error.code === error.PERMISSION_DENIED) {
+                    msg = "Veuillez autoriser l'accès à la localisation dans vos paramètres.";
+                }
+                alert(msg);
+                geoBtn.disabled = false;
+                geoBtn.innerHTML = `<i class="fa-solid fa-crosshairs"></i> Me géolocaliser`;
+            },
+            { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
+        );
+    }
+
+    // ── MULTI-FILE PIPELINE AND STORAGE OBJECT MANAGEMENT ────────────────────
     let selectedFiles = [];
 
     document.getElementById('media_files').addEventListener('change', function () {
@@ -238,7 +370,6 @@
             const wrapper = document.createElement('div');
             wrapper.className = 'preview-thumb';
 
-            // Remove button
             const removeBtn = document.createElement('div');
             removeBtn.className = 'remove-btn';
             removeBtn.innerHTML = '✕';
@@ -253,8 +384,8 @@
                 const placeholder = document.createElement('div');
                 placeholder.className = 'video-placeholder';
                 placeholder.innerHTML = `
-                    <i class="fa-solid fa-film" style="color:#D4AF37; font-size:1.5rem;"></i>
-                    <span style="color:rgba(255,255,255,0.3); font-size:8px; font-weight:900; text-transform:uppercase; text-align:center; padding:0 0.5rem; word-break:break-all;">${file.name}</span>
+                    <i class="fa-solid fa-film text-blue-600 text-xl"></i>
+                    <span class="text-slate-400 text-[8px] font-black uppercase text-center px-2 block truncate w-full">${file.name}</span>
                 `;
                 wrapper.appendChild(placeholder);
             }
@@ -263,7 +394,6 @@
             grid.appendChild(wrapper);
         });
 
-        // Sync the actual file input (rebuild a DataTransfer)
         const dt = new DataTransfer();
         selectedFiles.forEach(f => dt.items.add(f));
         document.getElementById('media_files').files = dt.files;
