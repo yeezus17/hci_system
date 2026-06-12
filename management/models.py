@@ -2,6 +2,8 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.db import models
 from django.dispatch import receiver
+from cloudinary.models import CloudinaryField
+
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -122,7 +124,7 @@ class Annonce(models.Model):
 
 class AnnonceMedia(models.Model):
     annonce = models.ForeignKey(Annonce, on_delete=models.CASCADE, related_name='media')
-    file = models.FileField(upload_to='')
+    file = CloudinaryField('file', resource_type='auto')  # handles both images & videos
     is_video = models.BooleanField(default=False)
 
     def __str__(self):
