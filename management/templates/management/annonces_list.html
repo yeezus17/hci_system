@@ -158,10 +158,11 @@
                         {% with media_list=annonce.media.all %}
                             <div class="w-full h-full relative">
                                 {% for m in media_list %}
-                                    {% if not m.is_video %}
-                                        <img src="{{ m.file.url }}" alt="{{ annonce.titre }}" class="w-full h-full object-cover absolute inset-0 z-0">
-                                    {% endif %}
-                                {% endfor %}
+    {% if not m.is_video %}
+        <img src="{{ m.file.url }}" alt="{{ annonce.titre }}" class="w-full h-full object-cover absolute inset-0 z-0">
+        {% break %}
+    {% endif %}
+{% endfor %}
                             </div>
 
                             {% if not media_list %}

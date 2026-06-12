@@ -3,7 +3,7 @@ from urllib import request
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.db.models import Q
-
+import cloudinary.uploader
 from core import settings
 from .models import Service, Category
 from management.forms import AnnonceForm, HCISignupForm
@@ -55,39 +55,42 @@ def annonces_list(request):
 
     return render(request, 'management/annonces_list.html', {'annonces': annonces})
 
+
+
 @login_required
 @user_passes_test(is_approved, login_url='pending_approval')
 def publier_annonce(request):
     if request.method == "POST":
-        # Ensure request.FILES is passed to catch the images/videos
         form = AnnonceForm(request.POST, request.FILES)
         
         if form.is_valid():
-            # 1. Save the main data (title, price, etc.)
             annonce = form.save(commit=False)
             annonce.auteur = request.user
             annonce.save()
 
-            # 2. Retrieve the list of multiple files from the 'media_files' field
             files = request.FILES.getlist('media_files')
 
-            # 3. Loop through files and create AnnonceMedia objects
             for f in files:
-                # Check if file is a video by inspecting its MIME type
                 is_video = f.content_type.startswith('video')
                 
-                # Import AnnonceMedia locally if not at top of file
+                # Upload to Cloudinary explicitly
+                resource_type = 'video' if is_video else 'image'
+                upload_result = cloudinary.uploader.upload(
+                    f,
+                    resource_type=resource_type,
+                    folder='annonces/'  # optional, keeps Cloudinary organized
+                )
+
                 from .models import AnnonceMedia
                 AnnonceMedia.objects.create(
                     annonce=annonce,
-                    file=f,
+                    file=upload_result['public_id'],  # store the public_id
                     is_video=is_video
                 )
 
             messages.success(request, "Votre annonce a été publiée avec succès !")
             return redirect('home')
         else:
-            # Enhanced error logging to see exactly why validation failed
             messages.error(request, "Erreur lors de la validation. Vérifiez les champs.")
     else:
         form = AnnonceForm()
@@ -96,7 +99,6 @@ def publier_annonce(request):
         'form': form,
         'google_maps_key': settings.GOOGLE_MAPS_KEY,
     })
-
 
 def services_list(request):
     # Default to prestataire but allow the user to toggle
