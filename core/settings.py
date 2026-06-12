@@ -14,7 +14,7 @@ DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
 # FIX 1: Ensure Railway's dynamically assigned app domains and wildcard checks pass flawlessly
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1,.railway.app').split(',')
-
+CSRF_TRUSTED_ORIGINS = ['https://hcisystem-production.up.railway.app']
 INSTALLED_APPS = [
     
     'django.contrib.admin',
