@@ -84,22 +84,14 @@
         <div class="lg:col-span-2 space-y-10">
 
             <div class="hero-container group">
-                {% with media_list=annonce.media.all %}
-                    <div class="w-full h-full relative">
-                        {% for m in media_list %}
-                            {% if not m.is_video %}
-                                <img src="{{ m.file.url }}" alt="{{ annonce.titre }}" 
-                                     class="w-full h-full object-cover absolute inset-0 z-0 transition-transform duration-1000 group-hover:scale-103">
-                            {% endif %}
-                        {% endfor %}
+                {% if annonce.first_image %}
+                    <img src="{{ annonce.first_image.file_url }}" alt="{{ annonce.titre }}"
+                         class="w-full h-full object-cover absolute inset-0 z-0 transition-transform duration-1000 group-hover:scale-103">
+                {% else %}
+                    <div class="w-full h-full bg-white flex items-center justify-center">
+                        <i class="fa-solid fa-city text-8xl text-slate-100"></i>
                     </div>
-
-                    {% if not media_list %}
-                        <div class="w-full h-full bg-white flex items-center justify-center">
-                            <i class="fa-solid fa-city text-8xl text-slate-100"></i>
-                        </div>
-                    {% endif %}
-                {% endwith %}
+                {% endif %}
 
                 <div class="absolute inset-0 bg-gradient-to-t from-[#0A2240]/90 via-[#0A2240]/20 to-transparent z-5"></div>
 
@@ -142,14 +134,14 @@
                     {% for media in all_media %}
                     <div class="gallery-thumb" onclick="openLightbox({{ forloop.counter0 }})">
                         {% if media.is_video %}
-                            <video src="{{ media.file.url }}" muted preload="metadata"></video>
+                            <video src="{{ media.file_url }}" muted preload="metadata"></video>
                             <div class="video-badge">
                                 <div class="w-10 h-10 rounded-full bg-[#0052B4] flex items-center justify-center text-white shadow-md">
                                     <i class="fa-solid fa-play text-xs ml-0.5"></i>
                                 </div>
                             </div>
                         {% else %}
-                            <img src="{{ media.file.url }}" alt="Media {{ forloop.counter }}">
+                            <img src="{{ media.file_url }}" alt="Media {{ forloop.counter }}">
                         {% endif %}
                     </div>
                     {% endfor %}
@@ -171,7 +163,7 @@
                         marginheight="0" 
                         marginwidth="0" 
                         src="https://maps.google.com/maps?q={{ annonce.ville|urlencode }}&t=&z=13&ie=UTF8&iwloc=&output=embed">
-                     Cenitaf</iframe>
+                    </iframe>
                 </div>
                 <div class="mt-6 flex items-center gap-3 text-slate-400">
                     <i class="fa-solid fa-circle-info text-[#0052B4]"></i>
@@ -264,7 +256,7 @@
 <script>
     const mediaList = [
         {% for media in annonce.media.all %}
-        { url: "{{ media.file.url }}", isVideo: {{ media.is_video|yesno:"true,false" }} },
+        { url: "{{ media.file_url }}", isVideo: {{ media.is_video|yesno:"true,false" }} },
         {% endfor %}
     ];
 
