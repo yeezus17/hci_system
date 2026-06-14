@@ -3,6 +3,8 @@ from django.db.models.signals import post_save
 from django.db import models
 from django.dispatch import receiver
 from cloudinary.models import CloudinaryField
+import cloudinary.utils
+
 
 
 class Profile(models.Model):
@@ -128,8 +130,14 @@ class Annonce(models.Model):
 
 class AnnonceMedia(models.Model):
     annonce = models.ForeignKey(Annonce, on_delete=models.CASCADE, related_name='media')
-    file = CloudinaryField('file', resource_type='auto')  # handles both images & videos
+    file = CloudinaryField('file', resource_type='auto')
     is_video = models.BooleanField(default=False)
+
+    @property
+    def file_url(self):
+        resource_type = 'video' if self.is_video else 'image'
+        url, _ = cloudinary.utils.cloudinary_url(str(self.file), resource_type=resource_type)
+        return url
 
     def __str__(self):
         return f"Media for {self.annonce.titre}"
