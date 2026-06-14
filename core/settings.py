@@ -11,7 +11,7 @@ load_dotenv(os.path.join(BASE_DIR, '.env'))
 
 SECRET_KEY = os.environ.get('SECRET_KEY')
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
-
+ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'https'
 # FIX 1: Ensure Railway's dynamically assigned app domains and wildcard checks pass flawlessly
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1,.railway.app').split(',')
 CSRF_TRUSTED_ORIGINS = ['https://hcisystem-production.up.railway.app']
