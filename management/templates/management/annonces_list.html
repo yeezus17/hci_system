@@ -156,7 +156,7 @@
                     
                     <div class="card-visual">
                         {% if annonce.first_image %}
-                            <img src="{{ annonce.first_image.file.url }}" alt="{{ annonce.titre }}" class="w-full h-full object-cover absolute inset-0 z-0">
+                            <img src="{{ annonce.first_image.file_url }}" alt="{{ annonce.titre }}" class="w-full h-full object-cover absolute inset-0 z-0">
                         {% else %}
                             <div class="card-visual-placeholder">
                                 <i class="fa-solid fa-city text-4xl text-slate-200"></i>
