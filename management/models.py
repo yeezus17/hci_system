@@ -121,6 +121,10 @@ class Annonce(models.Model):
 
     def __str__(self):
         return f"{self.titre} ({self.get_type_transaction_display()})"
+    
+    @property
+    def first_image(self):
+     return self.media.filter(is_video=False).first()
 
 class AnnonceMedia(models.Model):
     annonce = models.ForeignKey(Annonce, on_delete=models.CASCADE, related_name='media')

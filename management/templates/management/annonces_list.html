@@ -155,22 +155,13 @@
                 <article class="market-card">
                     
                     <div class="card-visual">
-                        {% with media_list=annonce.media.all %}
-                            <div class="w-full h-full relative">
-                                {% for m in media_list %}
-    {% if not m.is_video %}
-        <img src="{{ m.file.url }}" alt="{{ annonce.titre }}" class="w-full h-full object-cover absolute inset-0 z-0">
-        {% break %}
-    {% endif %}
-{% endfor %}
+                        {% if annonce.first_image %}
+                            <img src="{{ annonce.first_image.file.url }}" alt="{{ annonce.titre }}" class="w-full h-full object-cover absolute inset-0 z-0">
+                        {% else %}
+                            <div class="card-visual-placeholder">
+                                <i class="fa-solid fa-city text-4xl text-slate-200"></i>
                             </div>
-
-                            {% if not media_list %}
-                                <div class="card-visual-placeholder">
-                                    <i class="fa-solid fa-city text-4xl text-slate-200"></i>
-                                </div>
-                            {% endif %}
-                        {% endwith %}
+                        {% endif %}
 
                         <div class="absolute top-4 left-4 bg-white/80 backdrop-blur-md px-4 py-1.5 rounded-full border border-white/60 shadow-sm z-10">
                             <span class="text-[8px] font-black uppercase text-[#0052B4] tracking-widest">{{ annonce.get_type_bien_display }}</span>
