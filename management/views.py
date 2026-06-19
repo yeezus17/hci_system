@@ -48,7 +48,7 @@ def annonce_detail(request, pk):
         'medias': medias,
     }
 
-    return render(request, 'management/annonces_details.html', {'annonce': annonce})
+    return render(request, 'management/annonces_details.html', context)
 
 @login_required
 @user_passes_test(is_approved, login_url='pending_approval')
@@ -115,17 +115,32 @@ def create_service(request):
 def profile_view(request):
     user = request.user
     profile, _ = Profile.objects.get_or_create(user=user)
+    
     if request.method == 'POST':
+        # 1. Update core User details
         user.first_name = request.POST.get('first_name', user.first_name)
         user.email = request.POST.get('email', user.email)
         user.save()
+        
+        # 2. Update Profile Model details
         profile.phone_number = request.POST.get('phone_number', profile.phone_number)
         profile.bio = request.POST.get('bio', profile.bio)
-        if 'image' in request.FILES: profile.image = request.FILES['image']
+        if 'image' in request.FILES: 
+            profile.image = request.FILES['image']
         profile.save()
+        
         messages.success(request, "Profil mis à jour.")
         return redirect('user_profile')
-    return render(request, 'management/profile.html', {'profile': profile})
+    
+    # 3. Gather active search preferences for the GET request
+    saved_searches = BuyRequest.objects.filter(user=user).order_by('-id')
+    
+    context = {
+        'profile': profile,
+        'saved_searches': saved_searches,
+    }
+    
+    return render(request, 'management/profile.html', context)
 
 def signup_view(request):
     if request.method == 'POST':
