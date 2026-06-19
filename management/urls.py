@@ -14,7 +14,7 @@ urlpatterns = [
     path('services/', views.services_list, name='services_list'),
     path('services/publier/', views.create_service, name='create_service'),
     path('recherche/', views.create_buy_request, name='buy-request'),
-    # Si votre classe s'appelle AnnonceDetailView
-    path('annonces/<int:pk>/', views.annonce_detail, name='annonce_detail'),
+     
+   
     
 ]
