@@ -38,7 +38,6 @@ def annonces_list(request):
     return render(request, 'management/annonces_list.html', {'annonces': annonces})
 
 def annonce_detail(request, pk):
-
     annonce = get_object_or_404(Annonce, pk=pk)
     # Grab all associated photos/videos for this announcement
     medias = AnnonceMedia.objects.filter(annonce=annonce)
@@ -85,6 +84,15 @@ def create_buy_request(request):
     else:
         form = BuyRequestForm()
     return render(request, 'management/buyrequest.html', {'form': form})
+
+@login_required
+def delete_buy_request(request, pk):
+    if request.method == 'POST':
+        # Safely fetch the request only if it belongs to the logged-in user
+        buy_request = get_object_or_404(BuyRequest, pk=pk, user=request.user)
+        buy_request.delete()
+        messages.success(request, "Alerte de recherche supprimée avec succès.")
+    return redirect('user_profile')
 
 # --- SERVICES ---
 def services_list(request):
@@ -153,8 +161,6 @@ def signup_view(request):
         form = HCISignupForm()
     return render(request, 'management/signup.html', {'form': form})
 
-
-
 def login_view(request):
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
@@ -171,5 +177,3 @@ def logout_view(request):
 
 def pending_approval(request):
     return render(request, 'management/pending_approval.html')
-
-
