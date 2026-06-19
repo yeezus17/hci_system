@@ -92,6 +92,7 @@
         </button>
         <nav class="flex flex-col items-center">
             <a href="{% url 'annonces_list' %}" onclick="toggleMenu()" class="menu-link">{% trans "Marketplace" %}</a>
+            <a href="{% url 'buy-request' %}" onclick="toggleMenu()" class="menu-link text-[#F28E2B]">{% trans "Recherche" %}</a>
             <a href="#construction" onclick="toggleMenu()" class="menu-link text-[#0052B4]">{% trans "Construction" %}</a>
             <a href="#expert" onclick="toggleMenu()" class="menu-link">{% trans "Ingénierie" %}</a>
             <a href="{% url 'annonces_list' %}" onclick="toggleMenu()" class="menu-link text-white/30 text-xl mt-8">{% trans "Catalogue Immobilier" %}</a>
@@ -124,7 +125,7 @@
         <div class="cta-glass rounded-[2.5rem] p-8 md:p-12 shadow-[0_30px_70px_rgba(10,34,64,0.06)]">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10">
                 
-                <div class="lg:col-span-5 space-y-4">
+                <div class="lg:col-span-4 space-y-4">
                     <h2 class="text-3xl md:text-4xl font-black uppercase tracking-tight text-[#0A2240] leading-tight">
                         {% trans "Rejoignez le" %} <br><span class="text-[#0A2240]">{% trans "Réseau HCI" %}</span>
                     </h2>
@@ -134,7 +135,7 @@
                     </div>
                 </div>
                 
-                <div class="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <div class="lg:col-span-8 grid grid-cols-1 sm:grid-cols-3 gap-5">
                     {% if not user.is_authenticated %}
                     
                     <a href="{% url 'signup' %}" class="group bg-white/70 hover:bg-white/95 border border-white/80 hover:border-[#0A2240]/10 p-6 rounded-3xl flex flex-col justify-between transition-all duration-300 shadow-sm hover:-translate-y-1 min-h-[200px]">
@@ -143,31 +144,48 @@
                         </div>
                         <div>
                             <p class="text-[#0A2240] font-bold uppercase tracking-wide text-lg mb-1">{% trans "S'inscrire" %}</p>
-                            <p class="text-xs text-slate-500 font-medium m-0">{% trans "Accès direct aux experts sans commissions." %}</p>
+                            <p class="text-xs text-slate-500 font-medium m-0">{% trans "Créez votre compte pour commencer." %}</p>
                         </div>
                     </a>
                     
                     <a href="{% url 'login' %}" class="group bg-white/70 hover:bg-white/95 border border-white/80 hover:border-[#0A2240]/10 p-6 rounded-3xl flex flex-col justify-between transition-all duration-300 shadow-sm hover:-translate-y-1 min-h-[200px]">
-                        <div class="w-12 h-12 bg-[#0A2240]/5 rounded-xl flex items-center justify-center group-hover:bg-[#F28E2B] transition-colors">
+                        <div class="w-12 h-12 bg-[#0A2240]/5 rounded-xl flex items-center justify-center group-hover:bg-[#0052B4] transition-colors">
                             <i class="fa-solid fa-right-to-bracket text-[#0A2240] group-hover:text-white text-lg transition-colors"></i>
                         </div>
                         <div>
                             <p class="text-[#0A2240] font-bold uppercase tracking-wide text-lg mb-1">{% trans "Connexion" %}</p>
-                            <p class="text-xs text-slate-500 font-medium m-0">{% trans "Accès direct aux experts sans commissions." %}</p>
+                            <p class="text-xs text-slate-500 font-medium m-0">{% trans "Accédez à votre espace membre." %}</p>
                         </div>
                     </a>
                     
                     {% else %}
-                    <div class="col-span-2 bg-white/70 border border-white/80 p-8 rounded-3xl text-center backdrop-blur-sm">
-                        <p class="text-[#0A2240] font-bold uppercase tracking-widest text-xs mb-4">
-                            {% trans "Bienvenue" %}, {{ user.username }}
-                        </p>
-                        <a href="{% url 'user_profile' %}" 
-                           class="inline-block bg-[#0A2240] text-white font-bold px-8 py-4 rounded-xl uppercase text-[11px] tracking-widest transition-all duration-300 shadow-md hover:bg-[#F28E2B] hover:scale-105">
-                            {% trans "Accéder au Dashboard" %}
-                        </a>
+                    <div class="col-span-2 bg-white/70 border border-white/80 p-6 rounded-3xl flex flex-col justify-between backdrop-blur-sm min-h-[200px]">
+                        <div class="w-12 h-12 bg-[#0A2240]/5 rounded-xl flex items-center justify-center">
+                            <i class="fa-solid fa-user text-[#0A2240] text-lg"></i>
+                        </div>
+                        <div>
+                            <p class="text-[#0A2240] font-bold uppercase tracking-widest text-xs mb-2">
+                                {% trans "Bienvenue" %}, {{ user.username }}
+                            </p>
+                            <a href="{% url 'user_profile' %}" 
+                               class="inline-block bg-[#0A2240] text-white font-bold px-6 py-3 rounded-xl uppercase text-[10px] tracking-widest transition-all duration-300 shadow-md hover:bg-[#0052B4] hover:scale-105">
+                                {% trans "Accéder au Dashboard" %}
+                            </a>
+                        </div>
                     </div>
                     {% endif %}
+
+                    <!-- New Demand-Side/Buy Request Card -->
+                    <a href="{% url 'buy-request' %}" class="group bg-[#F28E2B]/10 hover:bg-[#F28E2B]/20 border border-[#F28E2B]/20 p-6 rounded-3xl flex flex-col justify-between transition-all duration-300 shadow-sm hover:-translate-y-1 min-h-[200px]">
+                        <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center group-hover:bg-[#F28E2B] transition-colors">
+                            <i class="fa-solid fa-magnifying-glass-dollar text-[#F28E2B] group-hover:text-white text-lg transition-colors"></i>
+                        </div>
+                        <div>
+                            <p class="text-[#0A2240] font-bold uppercase tracking-wide text-lg mb-1">{% trans "Recherche" %}</p>
+                            <p class="text-xs text-slate-500 font-medium m-0">{% trans "Vous cherchez un bien spécifique ? Exprimez votre besoin." %}</p>
+                        </div>
+                    </a>
+                    
                 </div>
             </div>
         </div>
@@ -250,13 +268,13 @@
                 
                 <div class="h-[220px] bg-slate-100 relative overflow-hidden">
                     {% if annonce.first_image %}
-    <img src="{{ annonce.first_image.file_url }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" alt="{{ annonce.titre }}">
-{% else %}
-    <div class="w-full h-full flex flex-col items-center justify-center bg-slate-50 text-slate-300 gap-2 border-b border-slate-100">
-        <i class="fa-solid fa-building-shield text-4xl text-[#0A2240]/10"></i>
-        <span class="text-[9px] uppercase tracking-widest font-bold text-slate-400">{% trans "Image non disponible" %}</span>
-    </div>
-{% endif %}
+                    <img src="{{ annonce.first_image.file_url }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" alt="{{ annonce.titre }}">
+                    {% else %}
+                    <div class="w-full h-full flex flex-col items-center justify-center bg-slate-50 text-slate-300 gap-2 border-b border-slate-100">
+                        <i class="fa-solid fa-building-shield text-4xl text-[#0A2240]/10"></i>
+                        <span class="text-[9px] uppercase tracking-widest font-bold text-slate-400">{% trans "Image non disponible" %}</span>
+                    </div>
+                    {% endif %}
                 </div>
                 
                 <div class="p-8 flex-grow flex flex-col justify-between">
@@ -313,7 +331,9 @@
         for (var i = 0; i < reveals.length; i++) {
             var windowHeight = window.innerHeight;
             var elementTop = reveals[i].getBoundingClientRect().top;
-            if (elementTop < windowHeight - 150) { reveals[i].classList.add("active"); }
+            if (elementTop < windowHeight - 150) { 
+                reveals[i].classList.add("active"); 
+            }
         }
     }
     window.addEventListener("scroll", reveal);

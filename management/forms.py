@@ -1,11 +1,11 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
-from .models import Annonce, Profile
+from .models import Annonce, Profile, BuyRequest, Service
 
-# Custom widget to allow multiple file uploads
+# --- CUSTOM FIELDS ---
 class MultipleFileInput(forms.ClearableFileInput):
-    allow_multiple_selected = True  # This is the key flag Django checks
+    allow_multiple_selected = True
 
 class MultipleFileField(forms.FileField):
     def __init__(self, *args, **kwargs):
@@ -13,7 +13,6 @@ class MultipleFileField(forms.FileField):
         super().__init__(*args, **kwargs)
 
     def clean(self, data, initial=None):
-        # Handle multiple files
         single_file_clean = super().clean
         if isinstance(data, (list, tuple)):
             result = [single_file_clean(d, initial) for d in data]
@@ -21,7 +20,7 @@ class MultipleFileField(forms.FileField):
             result = single_file_clean(data, initial)
         return result
 
-
+# --- FORMS ---
 class AnnonceForm(forms.ModelForm):
     media_files = MultipleFileField(
         widget=MultipleFileInput(attrs={
@@ -34,10 +33,7 @@ class AnnonceForm(forms.ModelForm):
 
     class Meta:
         model = Annonce
-        fields = [
-            'titre', 'type_transaction', 'type_bien',
-            'ville', 'prix', 'description', 'latitude', 'longitude'
-        ]
+        fields = ['titre', 'type_transaction', 'type_bien', 'ville', 'prix', 'description', 'latitude', 'longitude']
         widgets = {
             'titre': forms.TextInput(attrs={'class': 'input-field w-full px-5 py-4 rounded-2xl text-sm', 'placeholder': 'Ex: Magnifique Villa'}),
             'type_transaction': forms.Select(attrs={'class': 'input-field w-full px-5 py-4 rounded-2xl text-sm cursor-pointer'}),
@@ -49,7 +45,20 @@ class AnnonceForm(forms.ModelForm):
             'longitude': forms.HiddenInput(attrs={'id': 'lng-input'}),
         }
 
-
+class ServiceForm(forms.ModelForm):
+    class Meta:
+        model = Service
+        fields = ['name', 'category', 'description', 'city', 'address', 'phone', 'website', 'logo']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'input-field w-full px-5 py-4 rounded-2xl text-sm', 'placeholder': 'Nom de l\'entreprise'}),
+            'category': forms.Select(attrs={'class': 'input-field w-full px-5 py-4 rounded-2xl text-sm cursor-pointer'}),
+            'description': forms.Textarea(attrs={'class': 'input-field w-full px-5 py-4 rounded-2xl text-sm h-32', 'placeholder': 'Description...'}),
+            'city': forms.TextInput(attrs={'class': 'input-field w-full px-5 py-4 rounded-2xl text-sm', 'placeholder': 'Ville'}),
+            'address': forms.TextInput(attrs={'class': 'input-field w-full px-5 py-4 rounded-2xl text-sm', 'placeholder': 'Adresse'}),
+            'phone': forms.TextInput(attrs={'class': 'input-field w-full px-5 py-4 rounded-2xl text-sm', 'placeholder': 'Téléphone'}),
+            'website': forms.URLInput(attrs={'class': 'input-field w-full px-5 py-4 rounded-2xl text-sm', 'placeholder': 'Site web (optionnel)'}),
+            'logo': forms.FileInput(attrs={'class': 'input-field w-full px-5 py-4 rounded-2xl text-sm'}),
+        }
 
 class HCISignupForm(UserCreationForm):
     first_name = forms.CharField(max_length=30, required=True, widget=forms.TextInput(attrs={'class': 'field-input', 'placeholder': 'Prénom'}))
@@ -73,10 +82,19 @@ class HCISignupForm(UserCreationForm):
         user.first_name = self.cleaned_data["first_name"]
         user.last_name = self.cleaned_data["last_name"]
         user.email = self.cleaned_data["email"]
-        
         if commit:
             user.save()
             profile, created = Profile.objects.get_or_create(user=user)
             profile.phone_number = self.cleaned_data["phone"]
             profile.save()
         return user
+
+class BuyRequestForm(forms.ModelForm):
+    class Meta:
+        model = BuyRequest
+        fields = ['category_wanted', 'max_budget', 'ville']
+        widgets = {
+            'category_wanted': forms.Select(attrs={'class': 'input-field w-full px-5 py-4 rounded-2xl text-sm cursor-pointer'}),
+            'max_budget': forms.NumberInput(attrs={'class': 'input-field w-full px-5 py-4 rounded-2xl text-sm', 'placeholder': 'Budget maximum (DH)'}),
+            'ville': forms.TextInput(attrs={'class': 'input-field w-full px-5 py-4 rounded-2xl text-sm', 'placeholder': 'Ville souhaitée'}),
+        }

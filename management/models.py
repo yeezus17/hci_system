@@ -81,7 +81,7 @@ class Annonce(models.Model):
 
     # Added to match your Sidebar links
     TRANSACTION_CHOICES = [
-        ('ACHAT', 'Achat'),
+        
         ('VENTE', 'Vente'),
         ('LOCATION', 'Location'),
     ]
@@ -101,7 +101,7 @@ class Annonce(models.Model):
     type_transaction = models.CharField(
         max_length=20, 
         choices=TRANSACTION_CHOICES, 
-        default='ACHAT'
+        default='VENTE'
     )
     
     # Updated Field: Type of Property
@@ -128,6 +128,8 @@ class Annonce(models.Model):
     def first_image(self):
      return self.media.filter(is_video=False).first()
 
+import cloudinary.utils
+
 class AnnonceMedia(models.Model):
     annonce = models.ForeignKey(Annonce, on_delete=models.CASCADE, related_name='media')
     file = CloudinaryField('file', resource_type='auto')
@@ -141,3 +143,18 @@ class AnnonceMedia(models.Model):
 
     def __str__(self):
         return f"Media for {self.annonce.titre}"
+
+
+class BuyRequest(models.Model):
+    # This tracks what the user is looking for
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='buy_requests')
+    category_wanted = models.CharField(max_length=50, choices=Annonce.TYPE_CHOICES)
+    max_budget = models.DecimalField(max_digits=15, decimal_places=2)
+    ville = models.CharField(max_length=100)
+    
+    # Track the request
+    status = models.CharField(max_length=20, default='active') # active, fulfilled, cancelled
+    date_created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.username} wants {self.category_wanted} in {self.ville}"
