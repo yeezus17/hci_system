@@ -1,5 +1,5 @@
 from django.urls import path
-from . import views # This imports from management/views.py
+from . import views
 
 urlpatterns = [
     path('', views.home, name='home'),
@@ -14,7 +14,5 @@ urlpatterns = [
     path('services/', views.services_list, name='services_list'),
     path('services/publier/', views.create_service, name='create_service'),
     path('recherche/', views.create_buy_request, name='buy-request'),
-     
-   
-    
+    path('profile/delete-search/<int:pk>/', views.delete_buy_request, name='delete_buy_request'),
 ]
