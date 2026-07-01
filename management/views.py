@@ -71,7 +71,7 @@ def publier_annonce(request):
     return render(request, 'management/publier_annonce.html', {'form': form, 'google_maps_key': settings.GOOGLE_MAPS_KEY})
 
 # --- BUY REQUESTS ---
-@login_required
+@login_required(login_url='/fr/login/')
 def create_buy_request(request):
     if request.method == 'POST':
         form = BuyRequestForm(request.POST)
