@@ -40,7 +40,6 @@
         to   { opacity: 1; transform: translateY(0); }
     }
 
-    /* ── Brand Layout ── */
     .brand {
         text-align: center;
         margin-bottom: 2.5rem;
@@ -80,7 +79,6 @@
         opacity: 0.8;
     }
 
-    /* ── High Contrast Card ── */
     .auth-card {
         background: #FFFFFF;
         border: 1px solid var(--architect-border);
@@ -89,7 +87,6 @@
         box-shadow: 0 10px 40px rgba(10, 34, 64, 0.03);
     }
 
-    /* ── Clean Tab Switcher ── */
     .tab-row {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -125,11 +122,8 @@
         box-shadow: 0 4px 12px rgba(10, 34, 64, 0.04);
     }
 
-    .tab-btn:not(.active):hover {
-        color: var(--architect-navy);
-    }
+    .tab-btn:not(.active):hover { color: var(--architect-navy); }
 
-    /* ── Fields Framework ── */
     .field-group { margin-bottom: 1.4rem; }
 
     .field-label {
@@ -165,7 +159,6 @@
         box-shadow: 0 0 0 4px rgba(0, 82, 180, 0.06) !important;
     }
 
-    /* ── Action Triggers ── */
     .btn-primary {
         width: 100%;
         background: var(--architect-blue);
@@ -186,7 +179,6 @@
     .btn-primary:hover  { background: var(--architect-navy); transform: translateY(-1px); box-shadow: 0 8px 20px rgba(10, 34, 64, 0.15); }
     .btn-primary:active { transform: scale(0.99); }
 
-    /* ── Clean Metric Divider ── */
     .divider {
         display: flex;
         align-items: center;
@@ -209,7 +201,6 @@
         white-space: nowrap;
     }
 
-    /* ── Google Stark Redirect ── */
     .btn-google {
         display: flex;
         align-items: center;
@@ -238,7 +229,6 @@
     .btn-google:active { transform: scale(0.99); }
     .btn-google svg { flex-shrink: 0; }
 
-    /* ── Footer ── */
     .auth-footer {
         text-align: center;
         margin-top: 2rem;
@@ -272,7 +262,7 @@
 
             <div class="tab-row">
                 <a href="{% url 'login' %}"
-                   class="tab-btn {% if 'login' in request.path or 'login' not in request.path and 'signup' not in request.path %}active{% endif %}">
+                   class="tab-btn {% if 'signup' not in request.path %}active{% endif %}">
                     {% trans "Se connecter" %}
                 </a>
                 <a href="{% url 'signup' %}"
@@ -288,7 +278,7 @@
                     <label class="field-label">{{ field.label }}</label>
                     {{ field }}
                     {% if field.errors %}
-                        <p style="color:#DC2626; font-size:0.75rem; font-weight: 600; margin-top:0.4rem; margin-left:2px;">{{ field.errors|join:", " }}</p>
+                        <p style="color:#DC2626; font-size:0.75rem; font-weight:600; margin-top:0.4rem; margin-left:2px;">{{ field.errors|join:", " }}</p>
                     {% endif %}
                 </div>
                 {% endfor %}
@@ -314,9 +304,9 @@
 
         <div class="auth-footer">
             {% if 'signup' in request.path %}
-                {% trans "Déjà un compte ?" %}<a href="{% url 'account_login' %}">{% trans "Se connecter" %}</a>
+                {% trans "Déjà un compte ?" %}<a href="{% url 'login' %}">{% trans "Se connecter" %}</a>
             {% else %}
-                {% trans "Pas encore de compte ?" %}<a href="{% url 'account_signup' %}">{% trans "S'inscrire gratuitement" %}</a>
+                {% trans "Pas encore de compte ?" %}<a href="{% url 'signup' %}">{% trans "S'inscrire gratuitement" %}</a>
             {% endif %}
         </div>
 
@@ -324,7 +314,6 @@
 </div>
 
 <script>
-    /* Direct procedural binding matching context input classes */
     document.querySelectorAll('.auth-card input').forEach(input => {
         if (input.type !== 'checkbox' && input.type !== 'radio') {
             input.classList.add('field-input');
