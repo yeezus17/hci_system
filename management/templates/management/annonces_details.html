@@ -275,7 +275,7 @@
         <h3 class="text-[#0A2240] text-lg font-black uppercase tracking-tight mb-1">{% trans "Contacter l'expert" %}</h3>
         <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-6">{% trans "Choisissez un moyen de contact" %}</p>
 
-        {% with annonce.auteur.profile.telephone as phone %}
+        {% with annonce.auteur.profile.phone_number as phone %}
         {% if phone %}
         <a href="tel:{{ phone }}" class="contact-option">
             <div class="icon-box call"><i class="fa-solid fa-phone"></i></div>
