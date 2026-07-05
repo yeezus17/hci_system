@@ -58,6 +58,23 @@
     @media (max-width: 1024px) { .lightbox-prev { left: 16px; } .lightbox-next { right: 16px; } }
     
     .lightbox-counter { position: absolute; bottom: -36px; left: 50%; transform: translateX(-50%); font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.25em; color: #64748B; white-space: nowrap; }
+
+    /* Contact Modal */
+    .contact-modal-overlay { position: fixed; inset: 0; background: rgba(10, 34, 64, 0.45); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); z-index: 9998; display: none; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.25s ease; padding: 1.5rem; }
+    .contact-modal-overlay.active { display: flex; opacity: 1; }
+    .contact-modal-box { background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 2.5rem; width: 100%; max-width: 400px; padding: 2.5rem; position: relative; box-shadow: 0 25px 60px rgba(10, 34, 64, 0.12); transform: translateY(12px) scale(0.98); transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1); }
+    .contact-modal-overlay.active .contact-modal-box { transform: translateY(0) scale(1); }
+    .contact-modal-close { position: absolute; top: 1.5rem; right: 1.5rem; width: 36px; height: 36px; border-radius: 50%; background: #F8FAFC; border: 1px solid #E2E8F0; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 12px; color: #0A2240; transition: all 0.3s; }
+    .contact-modal-close:hover { background: #0A2240; color: #FFFFFF; border-color: #0A2240; }
+    .contact-option { display: flex; align-items: center; gap: 1rem; padding: 1.1rem 1.25rem; border-radius: 1.5rem; border: 1px solid #E2E8F0; background: #F8FAFC; text-decoration: none; transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1); margin-bottom: 0.85rem; }
+    .contact-option:hover { border-color: #0052B4; background: #FFFFFF; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0, 82, 180, 0.08); }
+    .contact-option .icon-box { width: 46px; height: 46px; border-radius: 1rem; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+    .contact-option .icon-box.call { background: rgba(0, 82, 180, 0.08); color: #0052B4; }
+    .contact-option .icon-box.whatsapp { background: rgba(37, 211, 102, 0.1); color: #25D366; }
+    .contact-option .icon-box.email { background: rgba(10, 34, 64, 0.06); color: #0A2240; }
+    .contact-option .label { text-transform: uppercase; font-weight: 900; font-size: 10px; letter-spacing: 0.15em; color: #94A3B8; margin-bottom: 2px; }
+    .contact-option .value { font-weight: 800; font-size: 13px; color: #0A2240; }
+    .contact-option.disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
 </style>
 {% endblock %}
 
@@ -202,7 +219,7 @@
                     </div>
                 </div>
 
-                <button class="w-full bg-[#0A2240] text-white font-black py-5 rounded-2xl uppercase tracking-[0.15em] text-[10px] hover:bg-[#0052B4] hover:shadow-[0_12px_30px_rgba(0,82,180,0.15)] transition-all duration-300 transform active:scale-98">
+                <button onclick="openContactModal()" class="w-full bg-[#0A2240] text-white font-black py-5 rounded-2xl uppercase tracking-[0.15em] text-[10px] hover:bg-[#0052B4] hover:shadow-[0_12px_30px_rgba(0,82,180,0.15)] transition-all duration-300 transform active:scale-98">
                     {% trans "Contacter l'expert" %} <i class="fa-solid fa-paper-plane ml-2"></i>
                 </button>
             </div>
@@ -248,6 +265,67 @@
         <div class="lightbox-nav lightbox-next" onclick="shiftLightbox(1)"><i class="fa-solid fa-chevron-right"></i></div>
         <div id="lightbox-media"></div>
         <div class="lightbox-counter" id="lightbox-counter"></div>
+    </div>
+</div>
+
+<!-- Contact Options Modal -->
+<div class="contact-modal-overlay" id="contact-modal" onclick="closeContactModalOnBackdrop(event)">
+    <div class="contact-modal-box">
+        <div class="contact-modal-close" onclick="closeContactModal()">✕</div>
+        <h3 class="text-[#0A2240] text-lg font-black uppercase tracking-tight mb-1">{% trans "Contacter l'expert" %}</h3>
+        <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-6">{% trans "Choisissez un moyen de contact" %}</p>
+
+        {% with annonce.auteur.profile.telephone as phone %}
+        {% if phone %}
+        <a href="tel:{{ phone }}" class="contact-option">
+            <div class="icon-box call"><i class="fa-solid fa-phone"></i></div>
+            <div>
+                <p class="label">{% trans "Appeler" %}</p>
+                <p class="value">{{ phone }}</p>
+            </div>
+        </a>
+        <a href="https://wa.me/{{ phone|cut:"+"|cut:" " }}" target="_blank" rel="noopener" class="contact-option">
+            <div class="icon-box whatsapp"><i class="fa-brands fa-whatsapp"></i></div>
+            <div>
+                <p class="label">{% trans "WhatsApp" %}</p>
+                <p class="value">{{ phone }}</p>
+            </div>
+        </a>
+        {% else %}
+        <div class="contact-option disabled">
+            <div class="icon-box call"><i class="fa-solid fa-phone"></i></div>
+            <div>
+                <p class="label">{% trans "Appeler" %}</p>
+                <p class="value">{% trans "Non disponible" %}</p>
+            </div>
+        </div>
+        <div class="contact-option disabled">
+            <div class="icon-box whatsapp"><i class="fa-brands fa-whatsapp"></i></div>
+            <div>
+                <p class="label">{% trans "WhatsApp" %}</p>
+                <p class="value">{% trans "Non disponible" %}</p>
+            </div>
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        {% if annonce.auteur.email %}
+        <a href="mailto:{{ annonce.auteur.email }}?subject={% trans "Question sur l'annonce" %} HCI-{{ annonce.id }}" class="contact-option">
+            <div class="icon-box email"><i class="fa-solid fa-envelope"></i></div>
+            <div>
+                <p class="label">{% trans "Email" %}</p>
+                <p class="value">{{ annonce.auteur.email }}</p>
+            </div>
+        </a>
+        {% else %}
+        <div class="contact-option disabled">
+            <div class="icon-box email"><i class="fa-solid fa-envelope"></i></div>
+            <div>
+                <p class="label">{% trans "Email" %}</p>
+                <p class="value">{% trans "Non disponible" %}</p>
+            </div>
+        </div>
+        {% endif %}
     </div>
 </div>
 {% endblock %}
@@ -311,10 +389,33 @@
     }
 
     document.addEventListener('keydown', (e) => {
-        if (!document.getElementById('lightbox').classList.contains('active')) return;
-        if (e.key === 'ArrowRight') shiftLightbox(1);
-        if (e.key === 'ArrowLeft') shiftLightbox(-1);
-        if (e.key === 'Escape') closeLightbox();
+        if (document.getElementById('lightbox').classList.contains('active')) {
+            if (e.key === 'ArrowRight') shiftLightbox(1);
+            if (e.key === 'ArrowLeft') shiftLightbox(-1);
+            if (e.key === 'Escape') closeLightbox();
+        }
+        if (document.getElementById('contact-modal').classList.contains('active')) {
+            if (e.key === 'Escape') closeContactModal();
+        }
     });
+
+    /* Contact Modal Logic */
+    function openContactModal() {
+        const modal = document.getElementById('contact-modal');
+        modal.style.display = 'flex';
+        setTimeout(() => modal.classList.add('active'), 10);
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeContactModal() {
+        const modal = document.getElementById('contact-modal');
+        modal.classList.remove('active');
+        setTimeout(() => modal.style.display = 'none', 250);
+        document.body.style.overflow = '';
+    }
+
+    function closeContactModalOnBackdrop(e) {
+        if (e.target === document.getElementById('contact-modal')) closeContactModal();
+    }
 </script>
 {% endblock %}
