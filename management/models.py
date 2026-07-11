@@ -12,7 +12,8 @@ class Profile(models.Model):
     is_approved_editor = models.BooleanField(default=False)
     # Updated to match the signup form field
     phone_number = models.CharField(max_length=20, blank=True, verbose_name="Téléphone")
-    image = models.ImageField(default='default.jpg', upload_to='profile_pics')
+    image = CloudinaryField('image', default='default.jpg', blank=True, null=True)
+
     bio = models.TextField(max_length=500, blank=True)
     
     # New Field: Track if they are a 'Prestataire' or 'Matière' user type

@@ -80,6 +80,39 @@
         border-color: var(--architect-navy);
         color: var(--architect-navy);
     }
+
+    /* ── Edit Profile Trigger: made visually dominant ── */
+    .btn-edit-profile {
+        background: var(--architect-navy);
+        border: 1px solid var(--architect-navy);
+        color: #FFFFFF;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        box-shadow: 0 8px 20px rgba(10, 34, 64, 0.15);
+        transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .btn-edit-profile:hover {
+        background: var(--architect-blue);
+        border-color: var(--architect-blue);
+        box-shadow: 0 14px 30px rgba(0, 82, 180, 0.25);
+        transform: translateY(-2px);
+    }
+    .btn-edit-profile:active { transform: translateY(0) scale(0.98); }
+    .btn-edit-profile i { font-size: 11px; transition: transform 0.3s ease; }
+    .btn-edit-profile:hover i { transform: rotate(-12deg); }
+    .btn-edit-profile.is-editing {
+        background: #FFFFFF;
+        color: var(--architect-navy);
+        border: 1px solid var(--architect-border);
+        box-shadow: none;
+    }
+    .btn-edit-profile.is-editing:hover {
+        border-color: var(--architect-navy);
+        color: var(--architect-navy);
+        background: #F8FAFC;
+        box-shadow: 0 8px 20px rgba(10, 34, 64, 0.06);
+    }
     
     .hidden-mode { display: none !important; }
     @keyframes grow { from { width: 0; } to { width: var(--progress); } }
@@ -175,8 +208,8 @@
                         </h1>
                         <p class="text-slate-400 text-[9px] mt-3 uppercase tracking-widest font-black">Identifiant Unique: #HCI-{{ user.id|add:"1000" }}</p>
                     </div>
-                    <button id="toggle-edit" onclick="toggleMode()" class="btn-secondary px-6 py-3.5 rounded-xl text-[9px] font-black uppercase tracking-widest">
-                        Modifier le profil
+                    <button id="toggle-edit" onclick="toggleMode()" class="btn-edit-profile px-7 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em]">
+                        <i class="fa-solid fa-pen"></i> <span id="toggle-edit-label">Modifier le profil</span>
                     </button>
                 </div>
 
@@ -292,7 +325,7 @@
 
 <script>
     function toggleMode() {
-        const elementsToToggle = ['view-mode', 'edit-mode', 'camera-btn', 'toggle-edit', 'view-tip'];
+        const elementsToToggle = ['view-mode', 'edit-mode', 'camera-btn', 'view-tip'];
         elementsToToggle.forEach(id => {
             const el = document.getElementById(id);
             if(el) el.classList.toggle('hidden-mode');
@@ -300,9 +333,13 @@
         
         // Dynamic switch mechanism reading the profile mutation form state
         const toggleBtn = document.getElementById('toggle-edit');
+        const toggleLabel = document.getElementById('toggle-edit-label');
         if (toggleBtn) {
             const isEditing = document.getElementById('view-mode').classList.contains('hidden-mode');
-            toggleBtn.innerText = isEditing ? "Voir mon Profil" : "Modifier le profil";
+            toggleBtn.classList.toggle('is-editing', isEditing);
+            toggleLabel.innerText = isEditing ? "Voir mon Profil" : "Modifier le profil";
+            const icon = toggleBtn.querySelector('i');
+            if (icon) icon.className = isEditing ? "fa-solid fa-eye" : "fa-solid fa-pen";
         }
     }
 
