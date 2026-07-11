@@ -24,6 +24,40 @@
         background: #F1F5F9;
     }
 
+    /* Hero Carousel Navigation */
+    .hero-nav {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.9);
+        backdrop-filter: blur(8px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        color: #0A2240;
+        box-shadow: 0 4px 12px rgba(10,34,64,0.08);
+        transition: all 0.25s ease;
+        opacity: 0;
+    }
+    .hero-container:hover .hero-nav { opacity: 1; }
+    .hero-nav:hover { background: #0052B4; color: #FFFFFF; }
+    .hero-prev { left: 20px; }
+    .hero-next { right: 20px; }
+    @media (max-width: 768px) { .hero-nav { opacity: 1; } } /* always visible on touch devices */
+
+    #hero-dots { pointer-events: auto; }
+    .hero-dot {
+        width: 7px; height: 7px; border-radius: 50%;
+        background: rgba(255,255,255,0.5);
+        cursor: pointer;
+        transition: all 0.25s ease;
+    }
+    .hero-dot.active { background: #FFFFFF; width: 20px; border-radius: 4px; }
+
     /* Architectural Clean Maps Framework */
     .map-container {
         width: 100%;
@@ -100,19 +134,21 @@
 
         <div class="lg:col-span-2 space-y-10">
 
-            <div class="hero-container group">
-                {% if annonce.first_image %}
-                    <img src="{{ annonce.first_image.file_url }}" alt="{{ annonce.titre }}"
-                         class="w-full h-full object-cover absolute inset-0 z-0 transition-transform duration-1000 group-hover:scale-103">
-                {% else %}
-                    <div class="w-full h-full bg-white flex items-center justify-center">
-                        <i class="fa-solid fa-city text-8xl text-slate-100"></i>
-                    </div>
-                {% endif %}
+            <div class="hero-container group" id="hero-carousel">
+                <div id="hero-media-slot" class="absolute inset-0 z-0 cursor-pointer" onclick="openLightbox(heroIndex)">
+                    {% if annonce.first_image %}
+                        <img id="hero-img" src="{{ annonce.first_image.file_url }}" alt="{{ annonce.titre }}"
+                             class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-103">
+                    {% else %}
+                        <div class="w-full h-full bg-white flex items-center justify-center">
+                            <i class="fa-solid fa-city text-8xl text-slate-100"></i>
+                        </div>
+                    {% endif %}
+                </div>
 
-                <div class="absolute inset-0 bg-gradient-to-t from-[#0A2240]/90 via-[#0A2240]/20 to-transparent z-5"></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-[#0A2240]/90 via-[#0A2240]/20 to-transparent z-5 pointer-events-none"></div>
 
-                <div class="absolute bottom-10 left-10 right-10 z-10">
+                <div class="absolute bottom-10 left-10 right-10 z-10 pointer-events-none">
                     <span class="bg-[#0052B4] text-white font-black text-[8px] uppercase tracking-widest px-4 py-2 rounded-full mb-4 inline-block shadow-sm">
                         {{ annonce.get_type_bien_display }}
                     </span>
@@ -123,10 +159,15 @@
 
                 {% with annonce.media.count as total %}
                 {% if total > 1 %}
-                <div class="absolute top-6 right-6 bg-white/90 backdrop-blur-md px-4 py-2 rounded-full border border-white/60 flex items-center gap-2 shadow-sm z-10">
+                <div class="absolute top-6 right-6 bg-white/90 backdrop-blur-md px-4 py-2 rounded-full border border-white/60 flex items-center gap-2 shadow-sm z-10 cursor-pointer hover:bg-white transition-colors" onclick="event.stopPropagation(); openLightbox(heroIndex)">
                     <i class="fa-solid fa-images text-[#0052B4] text-xs"></i>
                     <span class="text-[9px] font-black uppercase tracking-widest text-[#0A2240]">{{ total }} {% trans "médias" %}</span>
                 </div>
+
+                <div class="hero-nav hero-prev" onclick="event.stopPropagation(); shiftHero(-1)"><i class="fa-solid fa-chevron-left"></i></div>
+                <div class="hero-nav hero-next" onclick="event.stopPropagation(); shiftHero(1)"><i class="fa-solid fa-chevron-right"></i></div>
+
+                <div class="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 flex items-center gap-1.5" id="hero-dots"></div>
                 {% endif %}
                 {% endwith %}
             </div>
@@ -339,6 +380,53 @@
     ];
 
     let currentIndex = 0;
+    let heroIndex = 0;
+
+    /* Hero Carousel Logic */
+    function renderHeroMedia() {
+        if (mediaList.length === 0) return;
+        const slot = document.getElementById('hero-media-slot');
+        const item = mediaList[heroIndex];
+        if (item.isVideo) {
+            slot.innerHTML = `<video src="${item.url}" class="w-full h-full object-cover" muted autoplay loop playsinline></video>`;
+        } else {
+            slot.innerHTML = `<img src="${item.url}" alt="" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-103">`;
+        }
+        renderHeroDots();
+    }
+
+    function renderHeroDots() {
+        const dots = document.getElementById('hero-dots');
+        if (!dots) return;
+        dots.innerHTML = mediaList.map((_, i) =>
+            `<span class="hero-dot ${i === heroIndex ? 'active' : ''}" onclick="event.stopPropagation(); goToHero(${i})"></span>`
+        ).join('');
+    }
+
+    function shiftHero(dir) {
+        heroIndex = (heroIndex + dir + mediaList.length) % mediaList.length;
+        renderHeroMedia();
+    }
+
+    function goToHero(i) {
+        heroIndex = i;
+        renderHeroMedia();
+    }
+
+    if (mediaList.length > 1) {
+        renderHeroDots();
+
+        // Swipe support for mobile
+        let touchStartX = 0;
+        const heroCarousel = document.getElementById('hero-carousel');
+        heroCarousel.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, { passive: true });
+        heroCarousel.addEventListener('touchend', e => {
+            const dx = e.changedTouches[0].screenX - touchStartX;
+            if (Math.abs(dx) > 50) shiftHero(dx > 0 ? -1 : 1);
+        }, { passive: true });
+    }
 
     function openLightbox(index) {
         currentIndex = index;
