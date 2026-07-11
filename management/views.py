@@ -142,12 +142,26 @@ def profile_view(request):
     
     # 3. Gather active search preferences for the GET request
     saved_searches = BuyRequest.objects.filter(user=user).order_by('-id')
-    
+
+    # ── Count the user's own listings ──────────────────────────────
+    annonce_count = Annonce.objects.filter(auteur=user).count()
+
+    # ── Compute profile completion percentage ──────────────────────
+    fields_to_check = [
+        bool(user.first_name),
+        bool(user.email),
+        bool(profile.phone_number),
+        bool(profile.bio),
+        bool(profile.image) and profile.image != 'default.jpg',
+    ]
+    completion_percentage = int((sum(fields_to_check) / len(fields_to_check)) * 100)
+
     context = {
         'profile': profile,
         'saved_searches': saved_searches,
+        'annonce_count': annonce_count,
+        'completion_percentage': completion_percentage,
     }
-    
     return render(request, 'management/profile.html', context)
 
 def signup_view(request):
