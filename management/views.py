@@ -5,10 +5,18 @@ from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required, user_passes_test
 import cloudinary.uploader
+from django_ratelimit.decorators import ratelimit
 
 from core import settings
 from .models import Service, Category, Annonce, Profile, AnnonceMedia, BuyRequest
 from management.forms import AnnonceForm, HCISignupForm, BuyRequestForm, ServiceForm
+from axes.exceptions import AxesBackendPermissionDenied
+
+from PIL import Image, UnidentifiedImageError
+
+MAX_FILE_SIZE_MB = 25
+ALLOWED_VIDEO_EXTENSIONS = ['.mp4', '.mov', '.webm']
+
 
 def is_approved(user):
     return user.is_staff or (hasattr(user, 'profile') and user.profile.is_approved_editor)
@@ -49,6 +57,7 @@ def annonce_detail(request, pk):
 
     return render(request, 'management/annonces_details.html', context)
 
+
 @login_required
 @user_passes_test(is_approved, login_url='pending_approval')
 def publier_annonce(request):
@@ -58,14 +67,39 @@ def publier_annonce(request):
             annonce = form.save(commit=False)
             annonce.auteur = request.user
             annonce.save()
+
             files = request.FILES.getlist('media_files')
             for f in files:
-                is_video = f.content_type.startswith('video')
+                # Enforce a hard size limit before touching Cloudinary
+                if f.size > MAX_FILE_SIZE_MB * 1024 * 1024:
+                    messages.warning(request, f"{f.name} dépasse la taille maximale de {MAX_FILE_SIZE_MB} Mo et n'a pas été téléchargé.")
+                    continue
+
+                declared_video = f.content_type.startswith('video')
+
+                if declared_video:
+                    ext = f.name.lower()[f.name.rfind('.'):] if '.' in f.name else ''
+                    if ext not in ALLOWED_VIDEO_EXTENSIONS:
+                        messages.warning(request, f"{f.name} : Format vidéo non pris en charge. Formats autorisés : {', '.join(ALLOWED_VIDEO_EXTENSIONS)}.")
+                        continue
+                    is_video = True
+                else:
+                    # Verify the file is a valid image, don't trust content_type alone
+                    try:
+                        f.seek(0)
+                        Image.open(f).verify()
+                        f.seek(0)  # Reset file pointer after verification
+                    except UnidentifiedImageError:
+                        messages.warning(request, f"{f.name} : fichier image invalide ou corrompu.")
+                        continue
+                    is_video = False
+
                 resource_type = 'video' if is_video else 'image'
-                upload_result = cloudinary.uploader.upload(f, resource_type=resource_type, folder='annonces/')
+                upload_result = cloudinary.uploader.upload(f, resource_type=resource_type, folder='annonces')
                 AnnonceMedia.objects.create(annonce=annonce, file=upload_result['public_id'], is_video=is_video)
-            messages.success(request, "Annonce publiée avec succès !")
-            return redirect('home')
+
+            messages.success(request, "Votre annonce a été publiée avec succès.")
+            return redirect('annonce_detail', pk=annonce.pk)
     else:
         form = AnnonceForm()
     return render(request, 'management/publier_annonce.html', {'form': form, 'google_maps_key': settings.GOOGLE_MAPS_KEY})
@@ -164,6 +198,7 @@ def profile_view(request):
     }
     return render(request, 'management/profile.html', context)
 
+@ratelimit(key='ip', rate='5/h', method ='POST', block=True)
 def signup_view(request):
     if request.method == 'POST':
         form = HCISignupForm(request.POST)
@@ -175,13 +210,18 @@ def signup_view(request):
         form = HCISignupForm()
     return render(request, 'management/signup.html', {'form': form})
 
+
 def login_view(request):
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
-        if form.is_valid():
-            login(request, form.get_user())
-            return redirect('home')
-    else:
+        try:
+            if form.is_valid():
+                login(request, form.get_user())
+                return redirect('home')
+        except AxesBackendPermissionDenied:
+            messages.error(request, "Trop de tentatives de connexion échouées. Veuillez réessayer plus tard.")
+            return redirect('login')
+    else: 
         form = AuthenticationForm()
     return render(request, 'management/login.html', {'form': form})
 

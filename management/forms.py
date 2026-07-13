@@ -2,7 +2,16 @@ from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from .models import Annonce, Profile, BuyRequest, Service
+from PIL import Image, UnidentifiedImageError
 
+from django.core.validators import RegexValidator
+
+phone_validator = RegexValidator(
+    regex=r'^\+?[0-9\s\-]{8,20}$',
+    message="Numéro de téléphone invalide."
+)
+
+MAX_LOGO_SIZE_MB = 5
 # --- CUSTOM FIELDS ---
 class MultipleFileInput(forms.ClearableFileInput):
     allow_multiple_selected = True
@@ -44,6 +53,11 @@ class AnnonceForm(forms.ModelForm):
             'latitude': forms.HiddenInput(attrs={'id': 'lat-input'}),
             'longitude': forms.HiddenInput(attrs={'id': 'lng-input'}),
         }
+    def clean_prix(self):
+        prix = self.cleaned_data.get('prix')
+        if prix is not None and prix <= 0:
+            raise forms.ValidationError("Le prix doit être supérieur à 0.")
+        return prix
 
 class ServiceForm(forms.ModelForm):
     class Meta:
@@ -59,13 +73,33 @@ class ServiceForm(forms.ModelForm):
             'website': forms.URLInput(attrs={'class': 'input-field w-full px-5 py-4 rounded-2xl text-sm', 'placeholder': 'Site web (optionnel)'}),
             'logo': forms.FileInput(attrs={'class': 'input-field w-full px-5 py-4 rounded-2xl text-sm'}),
         }
+    def clean_logo(self):
+            logo = self.cleaned_data.get('logo')
+            if logo:
+                if logo.size > MAX_LOGO_SIZE_MB * 1024 * 1024:
+                    raise forms.ValidationError(f"Le logo dépasse {MAX_LOGO_SIZE_MB}Mo.")
+                try:
+                    logo.seek(0)
+                    Image.open(logo).verify()
+                    logo.seek(0)
+                except UnidentifiedImageError:
+                    raise forms.ValidationError("Fichier image invalide ou corrompu.")
+            return logo
+        
+    def clean_phone(self):
+            phone = self.cleaned_data.get('phone')
+            phone_validator(phone)
+            return phone
 
 class HCISignupForm(UserCreationForm):
     first_name = forms.CharField(max_length=30, required=True, widget=forms.TextInput(attrs={'class': 'field-input', 'placeholder': 'Prénom'}))
     last_name = forms.CharField(max_length=30, required=True, widget=forms.TextInput(attrs={'class': 'field-input', 'placeholder': 'Nom'}))
     email = forms.EmailField(required=True, widget=forms.EmailInput(attrs={'class': 'field-input', 'placeholder': 'Email'}))
-    phone = forms.CharField(max_length=20, required=True, widget=forms.TextInput(attrs={'class': 'field-input', 'placeholder': 'Téléphone'}))
-
+    phone = forms.CharField(
+    max_length=20, required=True,
+    validators=[phone_validator],
+    widget=forms.TextInput(attrs={'class': 'field-input', 'placeholder': 'Téléphone'})
+)
     class Meta:
         model = User
         fields = ('first_name', 'last_name', 'email')
@@ -98,3 +132,8 @@ class BuyRequestForm(forms.ModelForm):
             'max_budget': forms.NumberInput(attrs={'class': 'input-field w-full px-5 py-4 rounded-2xl text-sm', 'placeholder': 'Budget maximum (DH)'}),
             'ville': forms.TextInput(attrs={'class': 'input-field w-full px-5 py-4 rounded-2xl text-sm', 'placeholder': 'Ville souhaitée'}),
         }
+    def clean_max_budget(self):
+        max_budget = self.cleaned_data.get('max_budget')
+        if max_budget is not None and max_budget <= 0:
+            raise forms.ValidationError("Le budget doit être supérieur à 0.")
+        return max_budget
