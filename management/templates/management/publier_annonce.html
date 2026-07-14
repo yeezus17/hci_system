@@ -112,6 +112,20 @@
         transition: background 0.2s ease;
     }
     .preview-thumb .remove-btn:hover { background: #EF4444; color: #FFFFFF; }
+
+    /* ── Form-level error banner ── */
+    .form-alert {
+        grid-column: 1 / -1;
+        background: #FEF2F2;
+        border: 1px solid #FECACA;
+        color: #B91C1C;
+        font-size: 0.8rem;
+        font-weight: 700;
+        padding: 1rem 1.25rem;
+        border-radius: 12px;
+        margin-bottom: 1rem;
+        line-height: 1.6;
+    }
 </style>
 {% endblock %}
 
@@ -125,6 +139,15 @@
 
     <form method="POST" enctype="multipart/form-data" class="grid lg:grid-cols-12 gap-10">
         {% csrf_token %}
+
+        {% if form.errors %}
+            <div class="form-alert">
+                {% for field, errors in form.errors.items %}
+                    <strong>{{ field }}</strong> : {{ errors|join:", " }}<br>
+                {% endfor %}
+            </div>
+        {% endif %}
+
         <input type="hidden" name="latitude" id="lat-input" value="34.257">
         <input type="hidden" name="longitude" id="lng-input" value="-6.589">
 
@@ -143,7 +166,6 @@
                             <label class="text-[10px] font-black uppercase tracking-widest text-blue-600 mb-2 block">Type de transaction</label>
                             <div class="relative">
                                 <select name="type_transaction" class="input-field w-full p-5 rounded-2xl appearance-none cursor-pointer pr-10">
-                                    <option value="ACHAT">Achat</option>
                                     <option value="VENTE">Vente</option>
                                     <option value="LOCATION">Location</option>
                                 </select>
