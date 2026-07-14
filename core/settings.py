@@ -183,7 +183,7 @@ SITE_URL = os.environ.get('SITE_URL', 'https://hcisystem-production.up.railway.a
 # ── django-axes: brute-force login protection ──────────────────────
 AXES_FAILURE_LIMIT = 5          # lock out after 5 failed attempts
 AXES_COOLOFF_TIME = 1           # lockout duration in hours
-AXES_LOCKOUT_PARAMETERS = [['username', 'ip_address']]  # lock per username+IP combo
+AXES_LOCKOUT_PARAMETERS = [['username']]  # lock per username+IP combo
 AXES_RESET_ON_SUCCESS = True    # successful login clears the failure count
 # ── Tell django-axes (via django-ipware) how to correctly extract the
 # real client IP behind Railway's single reverse proxy hop. Without this,
