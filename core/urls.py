@@ -5,9 +5,11 @@ from django.conf import settings
 from django.conf.urls.i18n import i18n_patterns
 
 urlpatterns = [
-    path('hci-portal/', admin.site.urls),
+    path('hci-mgmt-portal/', admin.site.urls),
     path('i18n/', include('django.conf.urls.i18n')),
     path('accounts/', include('allauth.socialaccount.urls')),
+    path('accounts/google/', include('allauth.socialaccount.providers.google.urls')),  # ← add this
+
 ]
 
 urlpatterns += i18n_patterns(
