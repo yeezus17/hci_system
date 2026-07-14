@@ -8,7 +8,7 @@ urlpatterns = [
     path('hci-mgmt-portal/', admin.site.urls),
     path('i18n/', include('django.conf.urls.i18n')),
     path('accounts/', include('allauth.socialaccount.urls')),
-    path('accounts/google/', include('allauth.socialaccount.providers.google.urls')),  # ← add this
+    path('accounts/', include('allauth.socialaccount.providers.google.urls')),  # ← add this
 
 ]
 
