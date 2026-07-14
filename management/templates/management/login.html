@@ -245,6 +245,19 @@
         transition: all 0.2s ease;
     }
     .auth-footer a:hover { color: var(--architect-navy); border-color: var(--architect-navy); }
+
+    /* ── Auth feedback banners (form errors + Django messages) ── */
+    .auth-alert {
+        background: #FEF2F2;
+        border: 1px solid #FECACA;
+        color: #B91C1C;
+        font-size: 0.78rem;
+        font-weight: 700;
+        padding: 0.9rem 1.1rem;
+        border-radius: 12px;
+        margin-bottom: 1.4rem;
+        line-height: 1.5;
+    }
 </style>
 
 <div class="auth-wrap">
@@ -271,8 +284,21 @@
                 </a>
             </div>
 
+            <!-- Django messages framework: surfaces things like the Axes lockout warning -->
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="auth-alert">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+
             <form method="POST">
                 {% csrf_token %}
+
+                <!-- Form-level errors: e.g. AuthenticationForm's "invalid username or password" -->
+                {% if form.non_field_errors %}
+                    <div class="auth-alert">{{ form.non_field_errors|join:", " }}</div>
+                {% endif %}
+
                 {% for field in form %}
                 <div class="field-group">
                     <label class="field-label">{{ field.label }}</label>
