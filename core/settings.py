@@ -185,6 +185,12 @@ AXES_FAILURE_LIMIT = 5          # lock out after 5 failed attempts
 AXES_COOLOFF_TIME = 1           # lockout duration in hours
 AXES_LOCKOUT_PARAMETERS = [['username', 'ip_address']]  # lock per username+IP combo
 AXES_RESET_ON_SUCCESS = True    # successful login clears the failure count
+# ── Tell django-axes (via django-ipware) how to correctly extract the
+# real client IP behind Railway's single reverse proxy hop. Without this,
+# the IP can be parsed inconsistently across requests, splitting failure
+# counts across multiple records instead of accumulating on one. ──
+AXES_IPWARE_PROXY_COUNT = 1
+AXES_IPWARE_META_PRECEDENCE_ORDER = ['HTTP_X_FORWARDED_FOR']
 
 RATELIMIT_IP_META_KEY = 'HTTP_X_FORWARDED_FOR' # important on Railway's proxy
 
