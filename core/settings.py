@@ -191,6 +191,7 @@ AXES_RESET_ON_SUCCESS = True    # successful login clears the failure count
 # counts across multiple records instead of accumulating on one. ──
 AXES_IPWARE_PROXY_COUNT = 1
 AXES_IPWARE_META_PRECEDENCE_ORDER = ['HTTP_X_FORWARDED_FOR']
+AXES_LOCKOUT_CALLABLE = 'management.views.axes_lockout_response'
 
 RATELIMIT_IP_META_KEY = 'HTTP_X_FORWARDED_FOR' # important on Railway's proxy
 

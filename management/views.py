@@ -6,7 +6,8 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required, user_passes_test
 import cloudinary.uploader
 from django_ratelimit.decorators import ratelimit
-
+from django.shortcuts import redirect
+from django.contrib import messages
 from core import settings
 from .models import Service, Category, Annonce, Profile, AnnonceMedia, BuyRequest
 from management.forms import AnnonceForm, HCISignupForm, BuyRequestForm, ServiceForm
@@ -231,3 +232,9 @@ def logout_view(request):
 
 def pending_approval(request):
     return render(request, 'management/pending_approval.html')
+
+
+
+def axes_lockout_response(request, credentials, *args, **kwargs):
+    messages.error(request, "Trop de tentatives de connexion échouées. Veuillez réessayer plus tard.")
+    return redirect('login')
